@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>鰻料理メニュー / Unagi Menu</title>
+  <style>
+    body { font-family: "Hiragino Mincho ProN", "Yu Mincho", serif; background:#fff8f0; margin:0; color:#333; }
+    header { text-align:center; background:#8b0000; color:#fff; padding:22px 12px; }
+    header h1 { margin:0; line-height:1.35; }
+    header .en { font-family: Arial, sans-serif; font-size: 0.95em; color:#ffe; opacity:.9; }
+    .wrap { max-width: 1100px; margin: 0 auto; padding: 16px; }
+    .menu-item { display:flex; gap:18px; background:#fff; border:1px solid #e6d7c8; border-radius:12px; padding:14px; margin:12px 0; box-shadow: 0 2px 6px rgba(0,0,0,.04); }
+    .menu-img img { width: 220px; height: 160px; object-fit: cover; border-radius:10px; }
+    .menu-text { flex:1; min-width:0; }
+    .cat { display:inline-block; font-family: Arial, sans-serif; font-size:.8em; background:#f3e1d3; color:#7a2d00; padding:2px 8px; border-radius:999px; margin-bottom:6px; }
+    h2 { margin: 6px 0 8px; font-size:1.25rem; }
+    h2 .en { font-family: Arial, sans-serif; font-weight: normal; color:#666; font-size:.95rem; }
+    p { margin:.4em 0; }
+    .en-desc { font-family: Arial, sans-serif; color:#555; }
+    .price { font-size:1.15rem; font-weight:bold; color:#b22222; margin-top:6px; }
+    .footnote { text-align:center; font-size:.85em; color:#666; margin: 22px 0; font-family: Arial, sans-serif; }
+    @media (max-width: 720px) {
+      .menu-item { flex-direction: column; }
+      .menu-img img { width: 100%; height: 220px; }
+    }
+  </style>
+  <!-- CSVを正しく読むための軽量ライブラリ -->
+  <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+</head>
+<body>
+  <header>
+    <h1>鰻料理メニュー<br><span class="en">Unagi Restaurant Menu</span></h1>
+  </header>
+
+  <div class="wrap" id="menu"></div>
+  <div class="footnote">※ 表示は税込／価格は変動する場合があります。</div>
+
+  <script>
+    // ★ここに自分のスプレッドシートCSV URLを入れる
+    const SHEET_CSV_URL = "https://docs.google.com/spreadsheets/d/e/xxxx/pub?output=csv";
+
+    function yen(v) {
+      const n = Number(v);
+      return isNaN(n) ? v : n.toLocaleString("ja-JP");
+    }
+
+    function cardHTML(row) {
+      const img = row["Image URL"] ? `<img src="${row["Image URL"]}" alt="${row["Name (EN)"]||""}">` : "";
+      return `
+        <div class="menu-item">
+          <div class="menu-img">${img}</div>
+          <div class="menu-text">
+            ${row["Category"] ? `<div class="cat">${row["Category"]}</div>` : ""}
+            <h2>${row["Name (JP)"] || ""} <span class="en">/ ${row["Name (EN)"] || ""}</span></h2>
+            <p>${row["Description (JP)"] || ""}</p>
+            <p class="en-desc"><em>${row["Description (EN)"] || ""}</em></p>
+            ${row["Price"] ? `<p class="price">￥${yen(row["Price"])}</p>` : ""}
+          </div>
+        </div>`;
+    }
+
+    const url = SHEET_CSV_URL + "&t=" + Date.now(); // キャッシュ防止
+
+    Papa.parse(url, {
+      download: true,
+      header: true,
+      skipEmptyLines: true,
+      complete: (res) => {
+        const menuEl = document.getElementById("menu");
+        const rows = res.data.filter(r => Object.values(r).some(v => String(v||"").trim() !== ""));
+        menuEl.innerHTML = rows.map(cardHTML).join("");
+      },
+      error: (err) => {
+        document.getElementById("menu").innerHTML = "<p>メニューの読み込みに失敗しました。</p>";
+        console.error(err);
+      }
+    });
+  </script>
+</body>
+</html>
