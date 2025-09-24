@@ -36,46 +36,61 @@
   <div class="wrap" id="menu"></div>
   <div class="footnote">※ 表示は税込／価格は変動する場合があります。</div>
 
-  <script>
-    // ★ここに自分のスプレッドシートCSV URLを入れる
-    const SHEET_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vR7Rdo_eCMQF-HTxCjdZJDx6z8OQnYjc0WTVwuc_N6TNYpdwfFy5DLRmW35gbLZklPcuSGxmmGfafeT/pub?output=csv";
+<script>
+  const SHEET_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vR7Rdo_eCMQF-HTxCjdZJDx6z8OQnYjc0WTVwuc_N6TNYpdwfFy5DLRmW35gbLZklPcuSGxmmGfafeT/pub?output=csv";
 
-    function yen(v) {
-      const n = Number(v);
-      return isNaN(n) ? v : n.toLocaleString("ja-JP");
+  // ヘッダー名のブレを吸収するユーティリティ
+  const norm = s => String(s||"").trim().toLowerCase().replace(/\s+/g," ");
+  function get(row, wanted){
+    const key = Object.keys(row).find(k => norm(k) === norm(wanted));
+    return key ? String(row[key]).trim() : "";
+  }
+  const url = SHEET_CSV_URL + (SHEET_CSV_URL.includes("?") ? "&" : "?") + "t=" + Date.now();
+
+  function yen(v){ const n = Number(v); return isNaN(n) ? v : n.toLocaleString("ja-JP"); }
+
+  function cardHTML(row){
+    const cat  = get(row, "Category");
+    const jp   = get(row, "Name (JP)");
+    const en   = get(row, "Name (EN)");
+    const djp  = get(row, "Description (JP)");
+    const den  = get(row, "Description (EN)");
+    const pr   = get(row, "Price");
+    const imgU = get(row, "Image URL");
+    const img  = imgU
+      ? `<img src="${imgU}" alt="${en||jp||""}"
+              onerror="this.outerHTML='<div style=&quot;color:#a00;font-size:.9em&quot;>画像を表示できません:<br>${imgU.replace(/&/g,'&amp;')}</div>'">`
+      : "";
+    return `
+      <div class="menu-item">
+        <div class="menu-img">${img}</div>
+        <div class="menu-text">
+          ${cat ? `<div class="cat">${cat}</div>` : ""}
+          <h2>${jp||""} <span class="en">/ ${en||""}</span></h2>
+          <p>${djp||""}</p>
+          <p class="en-desc"><em>${den||""}</em></p>
+          ${pr ? `<p class="price">￥${yen(pr)}</p>` : ""}
+        </div>
+      </div>`;
+  }
+
+  Papa.parse(url, {
+    download: true,
+    header: true,
+    skipEmptyLines: true,
+    complete: (res) => {
+      const rows = res.data.filter(r => Object.values(r).some(v => String(v||"").trim() !== ""));
+      document.getElementById("menu").innerHTML = rows.map(cardHTML).join("");
+      // デバッグ確認
+      console.log("Headers:", Object.keys(res.data[0]||{}));
+      console.log("First row:", res.data[0]);
+    },
+    error: (err) => {
+      document.getElementById("menu").innerHTML = "<p>メニューの読み込みに失敗しました。</p>";
+      console.error(err);
     }
+  });
+</script>
 
-    function cardHTML(row) {
-      const img = row["Image URL"] ? `<img src="${row["Image URL"]}" alt="${row["Name (EN)"]||""}">` : "";
-      return `
-        <div class="menu-item">
-          <div class="menu-img">${img}</div>
-          <div class="menu-text">
-            ${row["Category"] ? `<div class="cat">${row["Category"]}</div>` : ""}
-            <h2>${row["Name (JP)"] || ""} <span class="en">/ ${row["Name (EN)"] || ""}</span></h2>
-            <p>${row["Description (JP)"] || ""}</p>
-            <p class="en-desc"><em>${row["Description (EN)"] || ""}</em></p>
-            ${row["Price"] ? `<p class="price">￥${yen(row["Price"])}</p>` : ""}
-          </div>
-        </div>`;
-    }
-
-    const url = SHEET_CSV_URL + "&t=" + Date.now(); // キャッシュ防止
-
-    Papa.parse(url, {
-      download: true,
-      header: true,
-      skipEmptyLines: true,
-      complete: (res) => {
-        const menuEl = document.getElementById("menu");
-        const rows = res.data.filter(r => Object.values(r).some(v => String(v||"").trim() !== ""));
-        menuEl.innerHTML = rows.map(cardHTML).join("");
-      },
-      error: (err) => {
-        document.getElementById("menu").innerHTML = "<p>メニューの読み込みに失敗しました。</p>";
-        console.error(err);
-      }
-    });
-  </script>
 </body>
 </html>
