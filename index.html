@@ -10,24 +10,8 @@
     header h1 { margin:0; line-height:1.35; }
     header .en { font-family: Arial, sans-serif; font-size: 0.95em; color:#ffe; opacity:.9; }
     .wrap { max-width: 1100px; margin: 0 auto; padding: 16px; }
-    .menu-item {
-  display: flex;
-  flex-direction: row-reverse; /* 画像を右側に */
-  align-items: center;         /* 縦位置をそろえる */
-  gap: 8px;                    /* 文字と画像の間を近くする */
-  background: #fff;
-  border: 1px solid #e6d7c8;
-  border-radius: 8px;          /* 枠の丸み少し小さく */
-  padding: 10px;               /* 内側の余白を小さく */
-  margin: 8px 0;               /* 外側の余白を小さく */
-  box-shadow: 0 1px 4px rgba(0,0,0,.08);
-}
-
-.menu-img img {
-  width: 160px;   /* 画像を少し小さく */
-  height: auto;   /* 高さは自動調整 */
-  border-radius: 6px;
-}
+    .menu-item{ display:flex; gap:18px; background:#fff; border:1px solid #e6d7c8; border-radius:12px; padding:14px; margin:12px 0; box-shadow: 0 2px 6px rgba(0,0,0,.04); }
+    .menu-img img { width: 220px; height: 160px; object-fit: cover; border-radius:10px; }
     .menu-text { flex:1; min-width:0; }
     .cat { display:inline-block; font-family: Arial, sans-serif; font-size:.8em; background:#f3e1d3; color:#7a2d00; padding:2px 8px; border-radius:999px; margin-bottom:6px; }
     h2 { margin: 6px 0 8px; font-size:1.25rem; }
