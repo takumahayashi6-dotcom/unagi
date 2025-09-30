@@ -23,6 +23,33 @@
     @media (max-width: 720px) {
       .menu-item { flex-direction: column; }
       .menu-img img { width: 100%; height: 220px; }
+      .tabs {
+  display: flex;
+  gap: 12px;
+  margin: 12px;
+  justify-content: center;
+}
+
+.tab {
+  padding: 8px 16px;
+  border: 1px solid #8b0000;
+  border-radius: 6px;
+  background: #fff;
+  color: #8b0000;
+  cursor: pointer;
+  font-weight: bold;
+  transition: 0.2s;
+}
+
+.tab:hover {
+  background: #f5dada;
+}
+
+.tab.active {
+  background: #8b0000;
+  color: #fff;
+}
+
     }
   </style>
   <!-- CSVを正しく読むための軽量ライブラリ -->
@@ -32,7 +59,9 @@
   <header>
     <h1>鰻料理メニュー<br><span class="en">Unagi Restaurant Menu</span></h1>
   </header>
-
+  
+<div class="tabs" id="tabs"></div>
+<div class="wrap" id="menu"></div>
   <div class="wrap" id="menu"></div>
   <div class="footnote">※ 表示は税込／価格は変動する場合があります。</div>
 
@@ -74,22 +103,41 @@
       </div>`;
   }
 
-  Papa.parse(url, {
-    download: true,
-    header: true,
-    skipEmptyLines: true,
-    complete: (res) => {
-      const rows = res.data.filter(r => Object.values(r).some(v => String(v||"").trim() !== ""));
-      document.getElementById("menu").innerHTML = rows.map(cardHTML).join("");
-      // デバッグ確認
-      console.log("Headers:", Object.keys(res.data[0]||{}));
-      console.log("First row:", res.data[0]);
-    },
-    error: (err) => {
-      document.getElementById("menu").innerHTML = "<p>メニューの読み込みに失敗しました。</p>";
-      console.error(err);
+ let allRows = [];  // 全メニューを保持
+let currentCategory = "";  // 今表示しているカテゴリ
+
+function renderTabs(categories) {
+  const tabsEl = document.getElementById("tabs");
+  tabsEl.innerHTML = categories.map(cat => 
+    `<div class="tab ${cat===currentCategory ? "active" : ""}" onclick="showCategory('${cat}')">${cat}</div>`
+  ).join("");
+}
+
+function showCategory(cat) {
+  currentCategory = cat;
+  renderTabs([...new Set(allRows.map(r => r["Category"]))]);  // タブ再描画
+  const filtered = allRows.filter(r => r["Category"] === cat);
+  document.getElementById("menu").innerHTML = filtered.map(cardHTML).join("");
+}
+
+// CSV読み込み処理
+Papa.parse(url, {
+  download: true,
+  header: true,
+  skipEmptyLines: true,
+  complete: (res) => {
+    allRows = res.data.filter(r => Object.values(r).some(v => String(v||"").trim() !== ""));
+    const categories = [...new Set(allRows.map(r => r["Category"]))];
+    if (categories.length > 0) {
+      showCategory(categories[0]);  // 最初のカテゴリを表示
     }
-  });
+  },
+  error: (err) => {
+    document.getElementById("menu").innerHTML = "<p>メニューの読み込みに失敗しました。</p>";
+    console.error(err);
+  }
+});
+
 </script>
 
 </body>
