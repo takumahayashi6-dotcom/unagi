@@ -118,8 +118,8 @@ function renderTabs(categories) {
 
 function showCategory(cat) {
   currentCategory = cat;
-  renderTabs([...new Set(allRows.map(r => get(r, "Category")))]);  // タブ再描画
-  const filtered = allRows.filter(r => get(r, "Category") === cat);
+  renderTabs([...new Set(allRows.map(r => getCategory(r)))]);
+  const filtered = allRows.filter(r => getCategory(r) === cat);
   document.getElementById("menu").innerHTML = filtered.map(cardHTML).join("");
 }
 
@@ -130,7 +130,7 @@ Papa.parse(url, {
   skipEmptyLines: true,
   complete: (res) => {
     allRows = res.data.filter(r => Object.values(r).some(v => String(v||"").trim() !== ""));
-    const categories = [...new Set(allRows.map(r => get(r, "Category")))];
+    const categories = [...new Set(allRows.map(r => getCategory(r)))];
     if (categories.length > 0) {
       showCategory(categories[0]);  // 最初のカテゴリを表示
     }
@@ -140,6 +140,17 @@ Papa.parse(url, {
     console.error(err);
   }
 });
+  // カテゴリをまとめるマップ
+const categoryMap = {
+  "生ビール": "ビール",
+  "瓶ビール": "ビール",
+  "ノンアルコールビール": "ビール"
+};
+function getCategory(row) {
+  const raw = get(row, "Category");
+  return categoryMap[raw] || raw; // マップにあれば置き換え、なければそのまま
+}
+
 
 </script>
 
