@@ -113,8 +113,8 @@ function renderTabs(categories) {
 
 function showCategory(cat) {
   currentCategory = cat;
-  renderTabs([...new Set(allRows.map(r => r["Category"]))]);  // タブ再描画
-  const filtered = allRows.filter(r => r["Category"] === cat);
+  renderTabs([...new Set(allRows.map(r => get(r, "Category")))]);  // タブ再描画
+  const filtered = allRows.filter(r => get(r, "Category") === cat);
   document.getElementById("menu").innerHTML = filtered.map(cardHTML).join("");
 }
 
@@ -125,7 +125,7 @@ Papa.parse(url, {
   skipEmptyLines: true,
   complete: (res) => {
     allRows = res.data.filter(r => Object.values(r).some(v => String(v||"").trim() !== ""));
-    const categories = [...new Set(allRows.map(r => r["Category"]))];
+    const categories = [...new Set(allRows.map(r => get(r, "Category")))];
     if (categories.length > 0) {
       showCategory(categories[0]);  // 最初のカテゴリを表示
     }
