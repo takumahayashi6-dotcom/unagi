@@ -81,30 +81,33 @@
 
   function yen(v){ const n = Number(v); return isNaN(n) ? v : n.toLocaleString("ja-JP"); }
 
-  function cardHTML(row){
-    const cat  = get(row, "Category");
-    const jp   = get(row, "Name (JP)");
-    const en   = get(row, "Name (EN)");
-    const djp  = get(row, "Description (JP)");
-    const den  = get(row, "Description (EN)");
-    const pr   = get(row, "Price");
-    const imgU = get(row, "Image URL");
-    const img  = imgU
-      ? `<img src="${imgU}" alt="${en||jp||""}"
-              onerror="this.outerHTML='<div style=&quot;color:#a00;font-size:.9em&quot;>画像を表示できません:<br>${imgU.replace(/&/g,'&amp;')}</div>'">`
-      : "";
-    return `
-      <div class="menu-item">
-        <div class="menu-img">${img}</div>
-        <div class="menu-text">
-          ${cat ? `<div class="cat">${cat}</div>` : ""}
-          <h2>${jp||""} <span class="en">/ ${en||""}</span></h2>
-          <p>${djp||""}</p>
-          <p class="en-desc"><em>${den||""}</em></p>
-          ${pr ? `<p class="price">￥${yen(pr)}</p>` : ""}
-        </div>
-      </div>`;
-  }
+function cardHTML(row){
+  const cat  = getCategory(row);  // タブ用
+  const sub  = get(row, "Category");  // 元のカテゴリ名も残す
+  const jp   = get(row, "Name (JP)");
+  const en   = get(row, "Name (EN)");
+  const djp  = get(row, "Description (JP)");
+  const den  = get(row, "Description (EN)");
+  const pr   = get(row, "Price");
+  const imgU = get(row, "Image URL");
+
+  const img  = imgU
+    ? `<img src="${imgU}" alt="${en||jp||""}">`
+    : "";
+
+  return `
+    <div class="menu-item">
+      <div class="menu-img">${img}</div>
+      <div class="menu-text">
+        ${cat ? `<div class="cat">${cat}${sub && sub!==cat ? " - " + sub : ""}</div>` : ""}
+        <h2>${jp||""} <span class="en">/ ${en||""}</span></h2>
+        <p>${djp||""}</p>
+        <p class="en-desc"><em>${den||""}</em></p>
+        ${pr ? `<p class="price">￥${yen(pr)}</p>` : ""}
+      </div>
+    </div>`;
+}
+
 
  let allRows = [];  // 全メニューを保持
 let currentCategory = "";  // 今表示しているカテゴリ
@@ -147,9 +150,12 @@ const categoryMap = {
   "ノンアルコールビール": "ビール"
 };
 function getCategory(row) {
-  const raw = get(row, "Category");
-  return categoryMap[raw] || raw; // マップにあれば置き換え、なければそのまま
+  // Group列があれば優先して使う。なければCategory列を使う。
+  const g = get(row, "Group");
+  if (g) return g;
+  return get(row, "Category");
 }
+
 
 
 </script>
