@@ -26,12 +26,16 @@
     }
       .tabs {
   display: flex;
-  gap: 12px;
+  flex-wrap: wrap;   /* ★折り返しを許可 */
+  gap: 8px;          /* 間隔を少し狭めに */
   margin: 12px;
   justify-content: center;
 }
 
 .tab {
+  flex: 1 1 auto;    /* ★自動調整 */
+  min-width: 120px;  /* ★最低幅（スマホで潰れすぎ防止） */
+  text-align: center;
   padding: 8px 16px;
   border: 1px solid #8b0000;
   border-radius: 6px;
@@ -50,6 +54,7 @@
   background: #8b0000;
   color: #fff;
 }
+
   </style>
   <!-- CSVを正しく読むための軽量ライブラリ -->
   <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
