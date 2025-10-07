@@ -32,23 +32,32 @@
     }
   .tabs {
   display: flex;
-  flex-wrap: wrap;
   gap: 8px;
-  margin: 12px;
-  justify-content: center;
+  padding: 8px 12px;
+  margin: 0;
+  overflow-x: auto;          /* ← 横スクロールを許可 */
+  white-space: nowrap;       /* ← 折り返し防止 */
+  scrollbar-width: thin;     /* Firefox用 細いスクロールバー */
+  background: #fff8f0;
+  border-bottom: 2px solid #8b0000;
 
-  position: sticky;      /* スクロールしても固定 */
-  top: 0;                /* 画面上端からの距離（headerの下なら調整可） */
-  background: #fff8f0;   /* 背景色（bodyと同じにして自然に） */
-  z-index: 1000;         /* 他要素より上に表示 */
-  padding: 10px 0;       /* 少し余白を追加して見やすく */
-  border-bottom: 2px solid #8b0000; /* 固定部分の見切れを防ぐ装飾 */
+  position: sticky;          /* ← スクロールしても上に固定 */
+  top: 0;
+  z-index: 1000;
 }
 
+/* スクロールバーのデザイン（任意） */
+.tabs::-webkit-scrollbar {
+  height: 6px;
+}
+.tabs::-webkit-scrollbar-thumb {
+  background: #8b0000;
+  border-radius: 4px;
+}
 
+/* 各タブの見た目 */
 .tab {
-  flex: 1 1 auto;    /* ★自動調整 */
-  min-width: 120px;  /* ★最低幅（スマホで潰れすぎ防止） */
+  flex: 0 0 auto;            /* ← 幅を自動にして横並び固定 */
   text-align: center;
   padding: 8px 16px;
   border: 1px solid #8b0000;
