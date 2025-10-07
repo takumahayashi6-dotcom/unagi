@@ -84,6 +84,16 @@
   margin: 10px 0 20px;
   font-family: "Hiragino Sans", "Yu Gothic", sans-serif;
 }
+.takeout-badge {
+  display: inline-block;
+  background: #f5dada;
+  color: #8b0000;
+  font-weight: bold;
+  font-size: 0.8em;
+  padding: 3px 8px;
+  border-radius: 6px;
+  margin-bottom: 6px;
+}
 
   </style>
   <!-- CSVを正しく読むための軽量ライブラリ -->
@@ -111,17 +121,23 @@
   function yen(v){ const n = Number(v); return isNaN(n) ? v : n.toLocaleString("ja-JP"); }
 
 function cardHTML(row){
-  const cat  = getCategory(row);  // タブ用
-  const sub  = get(row, "Category");  // 元のカテゴリ名も残す
+  const cat  = getCategory(row);
+  const sub  = get(row, "Category");
   const jp   = get(row, "Name (JP)");
   const en   = get(row, "Name (EN)");
   const djp  = get(row, "Description (JP)");
   const den  = get(row, "Description (EN)");
   const pr   = get(row, "Price");
   const imgU = get(row, "Image URL");
+  const take = get(row, "Takeout"); // ★ 追加列（○やYesなど）
 
   const img  = imgU
     ? `<img src="${imgU}" alt="${en||jp||""}">`
+    : "";
+
+  // ★ takeout印がある場合だけバッジを出す
+  const takeBadge = take && take.match(/(OK)/i)
+    ? `<span class="takeout-badge">お持ち帰り可</span>`
     : "";
 
   return `
@@ -130,6 +146,7 @@ function cardHTML(row){
       <div class="menu-text">
         ${cat ? `<div class="cat">${cat}${sub && sub!==cat ? " - " + sub : ""}</div>` : ""}
         <h2>${jp||""} <span class="en">/ ${en||""}</span></h2>
+        ${takeBadge}
         <p>${djp||""}</p>
         <p class="en-desc"><em>${den||""}</em></p>
         ${pr ? `<p class="price">￥${yen(pr)}</p>` : ""}
@@ -140,13 +157,36 @@ function cardHTML(row){
 
  let allRows = [];  // 全メニューを保持
 let currentCategory = "";  // 今表示しているカテゴリ
+// ★ カテゴリの表示順をここで指定（好きな順に並べ替えてOK）
+const CATEGORY_ORDER = [
+  "季節のお料理"
+  "うなぎ料理",
+  "コース料理",
+  "お料理",
+  "サラダ",
+  "ビール",
+  "日本酒",
+  "焼酎",
+  "ウイスキー",
+  "サワー類",
+  "ソフトドリンク",
+  "ジャパニーズジン",
+  "ソフトドリンク"
+];
 
 function renderTabs(categories) {
   const tabsEl = document.getElementById("tabs");
-  tabsEl.innerHTML = categories.map(cat => 
+
+  // ★ CATEGORY_ORDERに従って並び替え
+  const ordered = CATEGORY_ORDER.filter(c => categories.includes(c))
+    .concat(categories.filter(c => !CATEGORY_ORDER.includes(c))); 
+    // ← 未指定カテゴリは後ろに回す
+
+  tabsEl.innerHTML = ordered.map(cat => 
     `<div class="tab ${cat===currentCategory ? "active" : ""}" onclick="showCategory('${cat}')">${cat}</div>`
   ).join("");
 }
+
 
 function showCategory(cat) {
   currentCategory = cat;
@@ -157,6 +197,7 @@ function showCategory(cat) {
   const noteHTML = `
     <div class="note">
       ※ 表示価格は消費税込みです。写真はイメージです。
+      ※ ご飯大盛りは160円です
     </div>
   `;
 
