@@ -38,18 +38,19 @@
     .en-desc { font-family: Arial, sans-serif; color:#555; }
     .price { font-size:1.15rem; font-weight:bold; color:#b22222; margin-top:6px; }
     .footnote { text-align:center; font-size:.85em; color:#666; margin: 22px 0; font-family: Arial, sans-serif; }
-    @media (max-width: 720px) {
-      .menu-item { flex-direction: column; }
-      .menu-img img {
-  width: 100%;
-  height: auto;       /* ← 高さを自動に変更 */
-  max-width: 220px;   /* ← 横幅の上限を設定（レイアウト崩れ防止） */
-  border-radius: 10px;
-  display: block;
-  margin: 0 auto;
-  background: #fff;
-}
-    }
+ @media (max-width: 720px) {
+  .menu-item { flex-direction: column; }
+  .menu-img img {
+    width: 100%;
+    height: auto;
+    max-width: 220px;
+    border-radius: 10px;
+    display: block;
+    margin: 0 auto;
+    background: #fff;
+  }
+} /* ← この閉じカッコを追加！ */
+
   .tabs {
   display: flex;
   gap: 8px;
@@ -148,7 +149,7 @@ function cardHTML(row){
   const djp  = get(row, "Description (JP)");
   const den  = get(row, "Description (EN)");
   const pr   = get(row, "Price");
-  const imgU = get(row, "Image URL");
+  const imgU = fixDriveUrl(get(row, "Image URL"));
   const take = get(row, "Takeout"); // ★ 追加列（○やYesなど）
 
   const img  = imgU
@@ -254,6 +255,12 @@ function getCategory(row) {
   const g = get(row, "Group");
   if (g) return g;
   return get(row, "Category");
+}
+function fixDriveUrl(url) {
+  // 例: https://drive.google.com/file/d/ID/view → https://drive.google.com/uc?id=ID
+  const m = url.match(/\/d\/([a-zA-Z0-9_-]+)/);
+  if (m) return `https://drive.google.com/uc?id=${m[1]}`;
+  return url;
 }
 
 
