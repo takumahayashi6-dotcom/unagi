@@ -77,6 +77,13 @@
   background: #8b0000;
   color: #fff;
 }
+.note {
+  text-align: center;
+  font-size: 0.9em;
+  color: #555;
+  margin: 10px 0 20px;
+  font-family: "Hiragino Sans", "Yu Gothic", sans-serif;
+}
 
   </style>
   <!-- CSVを正しく読むための軽量ライブラリ -->
@@ -89,7 +96,6 @@
   
 <div class="tabs" id="tabs"></div>
 <div class="wrap" id="menu"></div>
-  <div class="footnote">※ 表示は税込／価格は変動する場合があります。</div>
 
 <script>
   const SHEET_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vR7Rdo_eCMQF-HTxCjdZJDx6z8OQnYjc0WTVwuc_N6TNYpdwfFy5DLRmW35gbLZklPcuSGxmmGfafeT/pub?output=csv";
@@ -146,8 +152,18 @@ function showCategory(cat) {
   currentCategory = cat;
   renderTabs([...new Set(allRows.map(r => getCategory(r)))]);
   const filtered = allRows.filter(r => getCategory(r) === cat);
-  document.getElementById("menu").innerHTML = filtered.map(cardHTML).join("");
+
+  // ★ 注意書きを上部に追加
+  const noteHTML = `
+    <div class="note">
+      ※ 表示価格は消費税込みです。写真はイメージです。
+    </div>
+  `;
+
+  document.getElementById("menu").innerHTML =
+    noteHTML + filtered.map(cardHTML).join("");
 }
+
 
 // CSV読み込み処理
 Papa.parse(url, {
