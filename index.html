@@ -10,17 +10,31 @@
     header h1 { margin:0; line-height:1.35; }
     header .en { font-family: Arial, sans-serif; font-size: 0.95em; color:#ffe; opacity:.9; }
     .wrap { max-width: 1100px; margin: 0 auto; padding: 16px; }
-    .menu-item{ display:flex; gap:18px; background:#fff; border:1px solid #e6d7c8; border-radius:12px; padding:14px; margin:12px 0; box-shadow: 0 2px 6px rgba(0,0,0,.04); }
-   .menu-img {
-  width: 220px;             /* 全部同じ横幅 */
-  height: 160px;            /* 全部同じ高さ */
+    .menu-item {
+  display: flex;
+  gap: 18px;
+  background: #fff;
+  border: 1px solid #e6d7c8;
+  border-radius: 12px;
+  padding: 14px;
+  margin: 12px 0;
+  box-shadow: 0 2px 6px rgba(0,0,0,.04);
+  align-items: center;       /* ★ 縦中央揃え */
+  justify-content: center;   /* ★ 横方向も中央寄せ */
+}
+.menu-img {
+  flex-shrink: 0;
+  width: 220px;
+  height: 160px;
   background: #fff;
   display: flex;
-  align-items: center;       /* 中央寄せ（上下） */
-  justify-content: center;   /* 中央寄せ（左右） */
+  align-items: center;
+  justify-content: center;
   border-radius: 10px;
-  overflow: hidden;          /* はみ出した部分を隠す（安全） */
+  overflow: hidden;
+  margin: 0 auto;            /* ★ コンテナ内で中央に */
 }
+
 
 .menu-img img {
   max-width: 100%;
@@ -149,7 +163,7 @@ function cardHTML(row){
   const djp  = get(row, "Description (JP)");
   const den  = get(row, "Description (EN)");
   const pr   = get(row, "Price");
-  const imgU = fixDriveUrl(get(row, "Image URL"));
+  const imgU = get(row, "Image URL");
   const take = get(row, "Takeout"); // ★ 追加列（○やYesなど）
 
   const img  = imgU
@@ -233,10 +247,15 @@ Papa.parse(url, {
   header: true,
   skipEmptyLines: true,
   complete: (res) => {
-    allRows = res.data.filter(r => Object.values(r).some(v => String(v||"").trim() !== ""));
+    // ★ Visible列が「✗」「No」「0」などなら除外
+    allRows = res.data.filter(r => {
+      const vis = get(r, "Visible").toLowerCase();
+      return !vis || vis.match(/(○|yes|ok|1|true)/i); // 表示するものだけ残す
+    });
+
     const categories = [...new Set(allRows.map(r => getCategory(r)))];
     if (categories.length > 0) {
-      showCategory(categories[0]);  // 最初のカテゴリを表示
+      showCategory(categories[0]);
     }
   },
   error: (err) => {
@@ -244,6 +263,7 @@ Papa.parse(url, {
     console.error(err);
   }
 });
+
   // カテゴリをまとめるマップ
 const categoryMap = {
   "生ビール": "ビール",
@@ -262,6 +282,7 @@ function fixDriveUrl(url) {
   if (m) return `https://drive.google.com/uc?id=${m[1]}`;
   return url;
 }
+
 
 
 
