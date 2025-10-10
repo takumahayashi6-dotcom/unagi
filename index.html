@@ -247,15 +247,15 @@ Papa.parse(url, {
   header: true,
   skipEmptyLines: true,
   complete: (res) => {
-    // ★ Visible列が「✗」「No」「0」などなら除外
+    // ★ Visible列が「×」「✗」「no」「0」「false」などなら除外
     allRows = res.data.filter(r => {
-      const vis = get(r, "Visible").toLowerCase();
-      return !vis || vis.match(/(○|yes|ok|1|true)/i); // 表示するものだけ残す
+      const vis = get(r, "Visible").trim().toLowerCase();
+      return !(vis && vis.match(/^(×|✗|x|no|0|false)$/i));
     });
 
     const categories = [...new Set(allRows.map(r => getCategory(r)))];
     if (categories.length > 0) {
-      showCategory(categories[0]);
+      showCategory(categories[0]);  // 最初のカテゴリを表示
     }
   },
   error: (err) => {
@@ -263,7 +263,6 @@ Papa.parse(url, {
     console.error(err);
   }
 });
-
   // カテゴリをまとめるマップ
 const categoryMap = {
   "生ビール": "ビール",
