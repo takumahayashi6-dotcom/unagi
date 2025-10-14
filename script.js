@@ -74,21 +74,38 @@ if (pr) {
     </div>`;
 }
 
-const CATEGORY_ORDER = [
-  "季節のお料理","うなぎ料理","コース料理","お料理",
-  "サラダ","ビール","日本酒","焼酎","ウイスキー",
-  "サワー類","ジャパニーズジン","ソフトドリンク","デザート"
-];
+// 日本語カテゴリ → 英語カテゴリの対応表
+const CATEGORY_TRANSLATION = {
+  "季節のお料理": "Seasonal Dishes",
+  "うなぎ料理": "Unagi Dishes",
+  "コース料理": "Course Meals",
+  "お料理": "Dishes",
+  "サラダ": "Salads",
+  "ビール": "Beer",
+  "日本酒": "Sake",
+  "焼酎": "Shochu",
+  "ウイスキー": "Whisky",
+  "サワー類": "Sours",
+  "ジャパニーズジン": "Japanese Gin",
+  "ソフトドリンク": "Soft Drinks",
+  "デザート": "Dessert"
+};
+
 
 function renderTabs(categories) {
   const tabsEl = document.getElementById("tabs");
   const ordered = CATEGORY_ORDER.filter(c => categories.includes(c))
     .concat(categories.filter(c => !CATEGORY_ORDER.includes(c)));
 
-  tabsEl.innerHTML = ordered.map(cat =>
-    `<div class="tab ${cat===currentCategory ? "active" : ""}" onclick="showCategory('${cat}')">${cat}</div>`
-  ).join("");
+  // 言語に応じて表示名を変える
+  tabsEl.innerHTML = ordered.map(cat => {
+    const label = currentLang === "en" && CATEGORY_TRANSLATION[cat]
+      ? CATEGORY_TRANSLATION[cat]
+      : cat;
+    return `<div class="tab ${cat===currentCategory ? "active" : ""}" onclick="showCategory('${cat}')">${label}</div>`;
+  }).join("");
 }
+
 
 function showCategory(cat) {
   currentCategory = cat;
