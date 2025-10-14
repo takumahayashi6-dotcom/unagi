@@ -2,16 +2,10 @@ const SHEET_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vR7Rdo_eC
 
 let allRows = [];
 let currentCategory = "";
-let currentLang = "jp"; // デフォルト：日本語
 
-// 言語切り替え
-function setLang(lang) {
-  currentLang = lang;
-  document.getElementById("btn-jp").classList.toggle("active", lang === "jp");
-  document.getElementById("btn-en").classList.toggle("active", lang === "en");
-
-  if (currentCategory) showCategory(currentCategory);
-}
+// URLから言語を取得
+const params = new URLSearchParams(window.location.search);
+let currentLang = params.get("lang") === "en" ? "en" : "jp"; // デフォルトjp
 
 function yen(v){ const n = Number(v); return isNaN(n) ? v : n.toLocaleString("ja-JP"); }
 
@@ -27,16 +21,7 @@ function getCategory(row) {
   return get(row, "Category");
 }
 
-// 複数価格対応
-function formatPrice(pr) {
-  if (!pr) return "";
-  if (pr.includes("/")) {
-    const parts = pr.split("/");
-    return parts.map(p => `<div class="price">${p.trim()}</div>`).join("");
-  }
-  return `<p class="price">￥${yen(pr)}</p>`;
-}
-
+// --- カード描画 ---
 function cardHTML(row) {
   const cat  = getCategory(row);
   const sub  = get(row, "Category");
@@ -55,7 +40,9 @@ function cardHTML(row) {
 
   const title = currentLang === "jp" ? jp : en;
   const desc = currentLang === "jp" ? djp : den;
-  const prText = formatPrice(pr);
+  const prText = pr.includes("/")
+    ? pr.split("/").map(p => `<div class="price">${p.trim()}</div>`).join("")
+    : (pr ? `<p class="price">￥${yen(pr)}</p>` : "");
 
   return `
     <div class="menu-item">
@@ -71,9 +58,9 @@ function cardHTML(row) {
 }
 
 const CATEGORY_ORDER = [
-  "季節のお料理", "うなぎ料理", "コース料理", "お料理",
-  "サラダ", "ビール", "日本酒", "焼酎", "ウイスキー",
-  "サワー類", "ジャパニーズジン", "ソフトドリンク", "デザート"
+  "季節のお料理","うなぎ料理","コース料理","お料理",
+  "サラダ","ビール","日本酒","焼酎","ウイスキー",
+  "サワー類","ジャパニーズジン","ソフトドリンク","デザート"
 ];
 
 function renderTabs(categories) {
@@ -94,7 +81,7 @@ function showCategory(cat) {
   const noteHTML = `
     <div class="note">
       ${currentLang === "jp"
-        ? "※ 表示価格は消費税込みです。写真はイメージです。ご飯大盛りは160円です。"
+        ? "※ 表示価格は税込みです。写真はイメージです。ご飯大盛りは160円です。"
         : "※ Prices include tax. Photos are for illustration only. Large rice +¥160."}
     </div>`;
 
@@ -102,7 +89,7 @@ function showCategory(cat) {
     noteHTML + filtered.map(cardHTML).join("");
 }
 
-// CSV読込
+// --- CSV読み込み ---
 Papa.parse(SHEET_CSV_URL, {
   download: true,
   header: true,
@@ -112,14 +99,10 @@ Papa.parse(SHEET_CSV_URL, {
       const vis = get(r, "Visible").trim().toLowerCase();
       return !(vis && vis.match(/^(×|✗|x|no|0|false)$/i));
     });
-
     const categories = [...new Set(allRows.map(r => getCategory(r)))];
-    if (categories.length > 0) {
-      showCategory(categories[0]);
-    }
+    if (categories.length > 0) showCategory(categories[0]);
   },
   error: (err) => {
     document.getElementById("menu").innerHTML = "<p>メニューの読み込みに失敗しました。</p>";
-    console.error(err);
   }
 });
