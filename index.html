@@ -5,19 +5,26 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>いちのや メニュー / Language Select</title>
   <style>
-    body {
-      font-family: "Yu Gothic", "Hiragino Sans", sans-serif;
-      background: #fff8f0;
-      margin: 0;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      height: 100dvh; /* ← スマホ対応 */
-      color: #8b0000;
-      writing-mode: horizontal-tb; /* ← 縦書き防止 */
-      text-orientation: mixed;
-    }
+   body {
+  writing-mode: horizontal-tb;  /* ← 縦書き防止 */
+  text-orientation: mixed;
+}
+
+.tabs {
+  display:flex;
+  gap:8px;
+  padding:8px 12px;
+  overflow-x:auto;
+  overflow-y:hidden;          /* ← 縦スクロールバー防止 */
+  white-space:nowrap;
+  border-bottom:2px solid #8b0000;
+  position:sticky;
+  top:0;
+  background:#fff8f0;
+  z-index:10;
+  writing-mode: horizontal-tb; /* ← ここにも */
+}
+
     h1 {
       font-size: 1.6rem;
       margin-bottom: 40px;
