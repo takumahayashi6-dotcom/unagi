@@ -5,33 +5,55 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>いちのや料理メニュー / Unagi Menu</title>
   <style>
-    body { 
-      font-family: "Hiragino Mincho ProN", "Yu Mincho", serif; 
-      background:#fff8f0; 
-      margin:0; 
-      color:#333; 
+    body {
+      font-family: "Hiragino Mincho ProN", "Yu Mincho", serif;
+      background:#fff8f0;
+      margin:0;
+      color:#333;
     }
     header {
-      text-align:center; 
-      background:#8b0000; 
-      color:#fff; 
-      padding:22px 12px; 
+      text-align:center;
+      background:#8b0000;
+      color:#fff;
+      padding:22px 12px;
     }
-    header h1 { 
-      margin:0; 
-      line-height:1.35; 
+    header h1 {
+      margin:0;
+      line-height:1.35;
     }
     header .en {
-      font-family: Arial, 
-      sans-serif; 
-      font-size: 0.95em; 
-      color:#ffe; opacity:.9; 
+      font-family: Arial, sans-serif;
+      font-size: 0.95em;
+      color:#ffe; opacity:.9;
     }
-    .wrap { 
-      max-width: 1100px; 
-      margin: 0 auto; 
-      padding: 16px; 
+
+    /* 言語切り替えボタン */
+    #lang-switch {
+      text-align:center;
+      margin:12px;
     }
+    #lang-switch button {
+      padding:6px 14px;
+      font-size:1rem;
+      margin:0 6px;
+      border:1px solid #8b0000;
+      border-radius:6px;
+      cursor:pointer;
+      background:#fff;
+      color:#8b0000;
+      transition:.2s;
+    }
+    #lang-switch button.active {
+      background:#8b0000;
+      color:#fff;
+    }
+
+    .wrap {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 16px;
+    }
+
     .menu-item {
       display: flex;
       gap: 18px;
@@ -41,9 +63,10 @@
       padding: 14px;
       margin: 12px 0;
       box-shadow: 0 2px 6px rgba(0,0,0,.04);
-      align-items: center;       /* ★ 縦中央揃え */
-      justify-content: center;   /* ★ 横方向も中央寄せ */
-  }
+      align-items: center;
+      justify-content: center;
+    }
+
     .menu-img {
       flex-shrink: 0;
       width: 220px;
@@ -54,298 +77,115 @@
       justify-content: center;
       border-radius: 10px;
       overflow: hidden;
-      margin: 0 auto;            /* ★ コンテナ内で中央に */
-  }
+      margin: 0 auto;
+    }
 
-
-  .menu-img img {
+    .menu-img img {
       max-width: 100%;
       max-height: 100%;
-      object-fit: contain;       /* ← 画像を切らずに全体表示 */
+      object-fit: contain;
       border-radius: 8px;
       display: block;
-  }
+    }
 
-  .menu-text { 
-      flex:1; 
-      min-width:0; 
-  }
-    .cat { 
-      display:inline-block; 
-      font-family: Arial, sans-serif; font-size:.8em; 
-      background:#f3e1d3; color:#7a2d00; 
-      padding:2px 8px; 
-      border-radius:999px; 
-      margin-bottom:6px; 
+    .menu-text {
+      flex:1;
+      min-width:0;
+    }
+    .cat {
+      display:inline-block;
+      font-family: Arial, sans-serif; font-size:.8em;
+      background:#f3e1d3; color:#7a2d00;
+      padding:2px 8px;
+      border-radius:999px;
+      margin-bottom:6px;
     }
     h2 {
-      margin: 6px 0 8px; 
-      font-size:1.25rem; 
+      margin: 6px 0 8px;
+      font-size:1.25rem;
     }
-    h2 .en {
-      font-family: Arial, sans-serif; 
-      font-weight: normal; 
-      color:#666; 
-      font-size:.95rem; 
+    p { margin:.4em 0; }
+    .price {
+      font-size:1.15rem;
+      font-weight:bold;
+      color:#b22222;
+      margin-top:6px;
     }
-    p { 
-      margin:.4em 0; 
+
+    .tabs {
+      display:flex;
+      gap:8px;
+      padding:8px 12px;
+      margin:0;
+      overflow-x:auto;
+      white-space:nowrap;
+      background:#fff8f0;
+      border-bottom:2px solid #8b0000;
+      position:sticky;
+      top:0;
+      z-index:1000;
     }
-    .en-desc { 
-      font-family: Arial, sans-serif; 
-      color:#555; 
+
+    .tab {
+      flex:0 0 auto;
+      text-align:center;
+      padding:8px 16px;
+      border:1px solid #8b0000;
+      border-radius:6px;
+      background:#fff;
+      color:#8b0000;
+      cursor:pointer;
+      font-weight:bold;
+      transition:0.2s;
     }
-    .price { 
-      font-size:1.15rem; 
-      font-weight:bold; 
-      color:#b22222; 
-      margin-top:6px; 
+    .tab.active { background:#8b0000; color:#fff; }
+
+    .note {
+      text-align: center;
+      font-size: 0.9em;
+      color: #555;
+      margin: 10px 0 20px;
+      font-family: "Hiragino Sans", "Yu Gothic", sans-serif;
     }
-    .footnote { 
-      text-align:center; 
-      font-size:.85em; 
-      color:#666; 
-      margin: 22px 0; 
-      font-family: Arial, sans-serif; 
+    .takeout-badge {
+      display: inline-block;
+      background: #f5dada;
+      color: #8b0000;
+      font-weight: bold;
+      font-size: 0.8em;
+      padding: 3px 8px;
+      border-radius: 6px;
+      margin-bottom: 6px;
     }
- @media (max-width: 720px) {
-  .menu-item { flex-direction: column; }
-  .menu-img img {
-    width: 100%;
-    height: auto;
-    max-width: 220px;
-    border-radius: 10px;
-    display: block;
-    margin: 0 auto;
-    background: #fff;
-  }
-} /* ← この閉じカッコを追加！ */
 
-  .tabs {
-  display: flex;
-  gap: 8px;
-  padding: 8px 12px;
-  margin: 0;
-  overflow-x: auto;          /* ← 横スクロールを許可 */
-  white-space: nowrap;       /* ← 折り返し防止 */
-  scrollbar-width: thin;     /* Firefox用 細いスクロールバー */
-  background: #fff8f0;
-  border-bottom: 2px solid #8b0000;
-
-  position: sticky;          /* ← スクロールしても上に固定 */
-  top: 0;
-  z-index: 1000;
-}
-
-/* スクロールバーのデザイン（任意） */
-.tabs::-webkit-scrollbar {
-  height: 6px;
-}
-.tabs::-webkit-scrollbar-thumb {
-  background: #8b0000;
-  border-radius: 4px;
-}
-
-/* 各タブの見た目 */
-.tab {
-  flex: 0 0 auto;            /* ← 幅を自動にして横並び固定 */
-  text-align: center;
-  padding: 8px 16px;
-  border: 1px solid #8b0000;
-  border-radius: 6px;
-  background: #fff;
-  color: #8b0000;
-  cursor: pointer;
-  font-weight: bold;
-  transition: 0.2s;
-}
-
-.tab:hover {
-  background: #f5dada;
-}
-
-.tab.active {
-  background: #8b0000;
-  color: #fff;
-}
-.note {
-  text-align: center;
-  font-size: 0.9em;
-  color: #555;
-  margin: 10px 0 20px;
-  font-family: "Hiragino Sans", "Yu Gothic", sans-serif;
-}
-.takeout-badge {
-  display: inline-block;
-  background: #f5dada;
-  color: #8b0000;
-  font-weight: bold;
-  font-size: 0.8em;
-  padding: 3px 8px;
-  border-radius: 6px;
-  margin-bottom: 6px;
-}
-
+    @media (max-width: 720px) {
+      .menu-item { flex-direction: column; }
+      .menu-img img { width: 100%; height: auto; }
+    }
   </style>
-  <!-- CSVを正しく読むための軽量ライブラリ -->
+
+  <!-- CSV読込用ライブラリ -->
   <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+  <!-- 外部スクリプト -->
+  <script src="./script.js" defer></script>
 </head>
+
 <body>
   <header>
     <h1>いちのや料理メニュー<br><span class="en">Unagi Restaurant Menu</span></h1>
   </header>
-  
-<div class="tabs" id="tabs"></div>
-<div class="wrap" id="menu"></div>
 
-<script>
-  const SHEET_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vR7Rdo_eCMQF-HTxCjdZJDx6z8OQnYjc0WTVwuc_N6TNYpdwfFy5DLRmW35gbLZklPcuSGxmmGfafeT/pub?output=csv";
+  <!-- 言語切り替えボタン -->
+  <div id="lang-switch">
+    <button id="btn-jp" class="active" onclick="setLang('jp')">🇯🇵 日本語</button>
+    <button id="btn-en" onclick="setLang('en')">🇺🇸 English</button>
+  </div>
 
-  // ヘッダー名のブレを吸収するユーティリティ
-  const norm = s => String(s||"").trim().toLowerCase().replace(/\s+/g," ");
-  function get(row, wanted){
-    const key = Object.keys(row).find(k => norm(k) === norm(wanted));
-    return key ? String(row[key]).trim() : "";
-  }
-  const url = SHEET_CSV_URL + (SHEET_CSV_URL.includes("?") ? "&" : "?") + "t=" + Date.now();
+  <div class="tabs" id="tabs"></div>
+  <div class="wrap" id="menu"></div>
+</body>
+</html>
 
-  function yen(v){ const n = Number(v); return isNaN(n) ? v : n.toLocaleString("ja-JP"); }
-
-function cardHTML(row){
-  // --- 価格表示部分の処理を修正 ---
-　let prText = "";
-　if (pr.includes("/")) {
-  // 「ボトル ¥1000 / グラス ¥200」などを分けて整形
-  const parts = pr.split("/");
-  prText = parts.map(p => `<div class="price">${p.trim()}</div>`).join("");
-　} else {
-  prText = pr ? `<p class="price">￥${yen(pr)}</p>` : "";
-　}
-  const cat  = getCategory(row);
-  const sub  = get(row, "Category");
-  const jp   = get(row, "Name (JP)");
-  const en   = get(row, "Name (EN)");
-  const djp  = get(row, "Description (JP)");
-  const den  = get(row, "Description (EN)");
-  const pr   = get(row, "Price");
-  const imgU = get(row, "Image URL");
-  const take = get(row, "Takeout"); // ★ 追加列（○やYesなど）
-
-  const img  = imgU
-    ? `<img src="${imgU}" alt="${en||jp||""}">`
-    : "";
-
-  // ★ takeout印がある場合だけバッジを出す
-  const takeBadge = take && take.match(/(OK)/i)
-    ? `<span class="takeout-badge">テイクアウト可</span>`
-    : "";
-
-  return `
-    <div class="menu-item">
-      <div class="menu-img">${img}</div>
-      <div class="menu-text">
-        ${cat ? `<div class="cat">${cat}${sub && sub!==cat ? " - " + sub : ""}</div>` : ""}
-        <h2>${jp||""} <span class="en">/ ${en||""}</span></h2>
-        ${takeBadge}
-        <p>${djp||""}</p>
-        <p class="en-desc"><em>${den||""}</em></p>
-        ${prText}
-      </div>
-    </div>`;
-}
-
-
- let allRows = [];  // 全メニューを保持
-let currentCategory = "";  // 今表示しているカテゴリ
-// ★ カテゴリの表示順をここで指定（好きな順に並べ替えてOK）
-const CATEGORY_ORDER = [
-  "季節のお料理",
-  "うなぎ料理",
-  "コース料理",
-  "お料理",
-  "サラダ",
-  "ビール",
-  "日本酒",
-  "焼酎",
-  "ウイスキー",
-  "サワー類",
-  "ジャパニーズジン",
-  "ソフトドリンク",
-  "デザート"
-];
-
-function renderTabs(categories) {
-  const tabsEl = document.getElementById("tabs");
-
-  // ★ CATEGORY_ORDERに従って並び替え
-  const ordered = CATEGORY_ORDER.filter(c => categories.includes(c))
-    .concat(categories.filter(c => !CATEGORY_ORDER.includes(c))); 
-    // ← 未指定カテゴリは後ろに回す
-
-  tabsEl.innerHTML = ordered.map(cat => 
-    `<div class="tab ${cat===currentCategory ? "active" : ""}" onclick="showCategory('${cat}')">${cat}</div>`
-  ).join("");
-}
-
-
-function showCategory(cat) {
-  currentCategory = cat;
-  renderTabs([...new Set(allRows.map(r => getCategory(r)))]);
-  const filtered = allRows.filter(r => getCategory(r) === cat);
-
-  // ★ 注意書きを上部に追加
-  const noteHTML = `
-    <div class="note">
-      ※ 表示価格は消費税込みです。写真はイメージです。
-      ※ ご飯大盛りは160円です
-    </div>
-  `;
-
-  document.getElementById("menu").innerHTML =
-    noteHTML + filtered.map(cardHTML).join("");
-}
-
-
-// CSV読み込み処理
-Papa.parse(url, {
-  download: true,
-  header: true,
-  skipEmptyLines: true,
-  complete: (res) => {
-    // ★ Visible列が「×」「✗」「no」「0」「false」などなら除外
-    allRows = res.data.filter(r => {
-      const vis = get(r, "Visible").trim().toLowerCase();
-      return !(vis && vis.match(/^(×|✗|x|no|0|false)$/i));
-    });
-
-    const categories = [...new Set(allRows.map(r => getCategory(r)))];
-    if (categories.length > 0) {
-      showCategory(categories[0]);  // 最初のカテゴリを表示
-    }
-  },
-  error: (err) => {
-    document.getElementById("menu").innerHTML = "<p>メニューの読み込みに失敗しました。</p>";
-    console.error(err);
-  }
-});
-  // カテゴリをまとめるマップ
-const categoryMap = {
-  "生ビール": "ビール",
-  "瓶ビール": "ビール",
-  "ノンアルコールビール": "ビール"
-};
-function getCategory(row) {
-  // Group列があれば優先して使う。なければCategory列を使う。
-  const g = get(row, "Group");
-  if (g) return g;
-  return get(row, "Category");
-}
-function fixDriveUrl(url) {
-  // 例: https://drive.google.com/file/d/ID/view → https://drive.google.com/uc?id=ID
-  const m = url.match(/\/d\/([a-zA-Z0-9_-]+)/);
-  if (m) return `https://drive.google.com/uc?id=${m[1]}`;
-  return url;
-}
 
 
 
