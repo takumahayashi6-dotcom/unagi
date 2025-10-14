@@ -23,8 +23,22 @@
     header .en { font-family: Arial, sans-serif; font-size: 0.95em; color:#ffe; opacity:.9; }
 
     .tabs {
-      display:flex; gap:8px; padding:8px 12px; overflow-x:auto;
-      border-bottom:2px solid #8b0000; position:sticky; top:0; background:#fff8f0; z-index:10;
+  display: flex;
+  gap: 8px;
+  padding: 8px 12px;
+  overflow-x: auto;
+  overflow-y: hidden; /* ←縦スクロールバー防止 */
+  white-space: nowrap;
+  border-bottom: 2px solid #8b0000;
+  position: sticky;
+  top: 0;
+  background: #fff8f0;
+  z-index: 10;
+  writing-mode: horizontal-tb;   /* ← 横書き強制 */
+  text-orientation: mixed;
+  font-family: "Yu Gothic", "Hiragino Sans", sans-serif; /* ← ゴシック系で縦書き誤認回避 */
+}
+
     }
     .tab { padding:8px 16px; border:1px solid #8b0000; border-radius:6px; cursor:pointer; font-weight:bold; color:#8b0000; }
     .tab.active { background:#8b0000; color:#fff; }
