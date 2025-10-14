@@ -5,53 +5,109 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>いちのや料理メニュー / Unagi Menu</title>
   <style>
-    body { font-family: "Hiragino Mincho ProN", "Yu Mincho", serif; background:#fff8f0; margin:0; color:#333; }
-    header { text-align:center; background:#8b0000; color:#fff; padding:22px 12px; }
-    header h1 { margin:0; line-height:1.35; }
-    header .en { font-family: Arial, sans-serif; font-size: 0.95em; color:#ffe; opacity:.9; }
-    .wrap { max-width: 1100px; margin: 0 auto; padding: 16px; }
+    body { 
+      font-family: "Hiragino Mincho ProN", "Yu Mincho", serif; 
+      background:#fff8f0; 
+      margin:0; 
+      color:#333; 
+    }
+    header {
+      text-align:center; 
+      background:#8b0000; 
+      color:#fff; 
+      padding:22px 12px; 
+    }
+    header h1 { 
+      margin:0; 
+      line-height:1.35; 
+    }
+    header .en {
+      font-family: Arial, 
+      sans-serif; 
+      font-size: 0.95em; 
+      color:#ffe; opacity:.9; 
+    }
+    .wrap { 
+      max-width: 1100px; 
+      margin: 0 auto; 
+      padding: 16px; 
+    }
     .menu-item {
-  display: flex;
-  gap: 18px;
-  background: #fff;
-  border: 1px solid #e6d7c8;
-  border-radius: 12px;
-  padding: 14px;
-  margin: 12px 0;
-  box-shadow: 0 2px 6px rgba(0,0,0,.04);
-  align-items: center;       /* ★ 縦中央揃え */
-  justify-content: center;   /* ★ 横方向も中央寄せ */
-}
-.menu-img {
-  flex-shrink: 0;
-  width: 220px;
-  height: 160px;
-  background: #fff;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 10px;
-  overflow: hidden;
-  margin: 0 auto;            /* ★ コンテナ内で中央に */
-}
+      display: flex;
+      gap: 18px;
+      background: #fff;
+      border: 1px solid #e6d7c8;
+      border-radius: 12px;
+      padding: 14px;
+      margin: 12px 0;
+      box-shadow: 0 2px 6px rgba(0,0,0,.04);
+      align-items: center;       /* ★ 縦中央揃え */
+      justify-content: center;   /* ★ 横方向も中央寄せ */
+  }
+    .menu-img {
+      flex-shrink: 0;
+      width: 220px;
+      height: 160px;
+      background: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 10px;
+      overflow: hidden;
+      margin: 0 auto;            /* ★ コンテナ内で中央に */
+  }
 
 
-.menu-img img {
-  max-width: 100%;
-  max-height: 100%;
-  object-fit: contain;       /* ← 画像を切らずに全体表示 */
-  border-radius: 8px;
-  display: block;
-}
+  .menu-img img {
+      max-width: 100%;
+      max-height: 100%;
+      object-fit: contain;       /* ← 画像を切らずに全体表示 */
+      border-radius: 8px;
+      display: block;
+  }
 
-    .menu-text { flex:1; min-width:0; }
-    .cat { display:inline-block; font-family: Arial, sans-serif; font-size:.8em; background:#f3e1d3; color:#7a2d00; padding:2px 8px; border-radius:999px; margin-bottom:6px; }
-    h2 { margin: 6px 0 8px; font-size:1.25rem; }
-    h2 .en { font-family: Arial, sans-serif; font-weight: normal; color:#666; font-size:.95rem; }
-    p { margin:.4em 0; }
-    .en-desc { font-family: Arial, sans-serif; color:#555; }
-    .price { font-size:1.15rem; font-weight:bold; color:#b22222; margin-top:6px; }
-    .footnote { text-align:center; font-size:.85em; color:#666; margin: 22px 0; font-family: Arial, sans-serif; }
+  .menu-text { 
+      flex:1; 
+      min-width:0; 
+  }
+    .cat { 
+      display:inline-block; 
+      font-family: Arial, sans-serif; font-size:.8em; 
+      background:#f3e1d3; color:#7a2d00; 
+      padding:2px 8px; 
+      border-radius:999px; 
+      margin-bottom:6px; 
+    }
+    h2 {
+      margin: 6px 0 8px; 
+      font-size:1.25rem; 
+    }
+    h2 .en {
+      font-family: Arial, sans-serif; 
+      font-weight: normal; 
+      color:#666; 
+      font-size:.95rem; 
+    }
+    p { 
+      margin:.4em 0; 
+    }
+    .en-desc { 
+      font-family: Arial, sans-serif; 
+      color:#555; 
+    }
+    .price { 
+      font-size:1.15rem; 
+      font-weight:bold; 
+      color:#b22222; 
+      margin-top:6px; 
+    }
+    .footnote { 
+      text-align:center; 
+      font-size:.85em; 
+      color:#666; 
+      margin: 22px 0; 
+      font-family: Arial, sans-serif; 
+    }
  @media (max-width: 720px) {
   .menu-item { flex-direction: column; }
   .menu-img img {
