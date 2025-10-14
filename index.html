@@ -212,6 +212,15 @@
   function yen(v){ const n = Number(v); return isNaN(n) ? v : n.toLocaleString("ja-JP"); }
 
 function cardHTML(row){
+  // --- 価格表示部分の処理を修正 ---
+　let prText = "";
+　if (pr.includes("/")) {
+  // 「ボトル ¥1000 / グラス ¥200」などを分けて整形
+  const parts = pr.split("/");
+  prText = parts.map(p => `<div class="price">${p.trim()}</div>`).join("");
+　} else {
+  prText = pr ? `<p class="price">￥${yen(pr)}</p>` : "";
+　}
   const cat  = getCategory(row);
   const sub  = get(row, "Category");
   const jp   = get(row, "Name (JP)");
@@ -240,7 +249,7 @@ function cardHTML(row){
         ${takeBadge}
         <p>${djp||""}</p>
         <p class="en-desc"><em>${den||""}</em></p>
-        ${pr ? `<p class="price">￥${yen(pr)}</p>` : ""}
+        ${prText}
       </div>
     </div>`;
 }
