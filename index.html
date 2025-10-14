@@ -5,32 +5,27 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>いちのや メニュー / Language Select</title>
   <style>
-   body {
-  writing-mode: horizontal-tb;  /* ← 縦書き防止 */
-  text-orientation: mixed;
-}
-
-.tabs {
-  display:flex;
-  gap:8px;
-  padding:8px 12px;
-  overflow-x:auto;
-  overflow-y:hidden;          /* ← 縦スクロールバー防止 */
-  white-space:nowrap;
-  border-bottom:2px solid #8b0000;
-  position:sticky;
-  top:0;
-  background:#fff8f0;
-  z-index:10;
-  writing-mode: horizontal-tb; /* ← ここにも */
-}
+    body {
+      font-family: "Yu Gothic", "Hiragino Sans", sans-serif;
+      background: #fff8f0;
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100dvh;               /* ← スマホ対応の中央配置 */
+      color: #8b0000;
+      writing-mode: horizontal-tb;  /* ← 縦書き防止 */
+      text-orientation: mixed;
+      text-align: center;
+    }
 
     h1 {
       font-size: 1.6rem;
       margin-bottom: 40px;
-      text-align: center;
       line-height: 1.4;
     }
+
     .btn {
       display: inline-block;
       padding: 14px 40px;
@@ -43,9 +38,19 @@
       color: #8b0000;
       transition: .2s;
     }
+
     .btn:hover {
       background: #8b0000;
       color: #fff;
+    }
+
+    /* スマホ小画面対応 */
+    @media (max-width: 480px) {
+      .btn {
+        width: 80%;
+        font-size: 1.1rem;
+        padding: 12px 0;
+      }
     }
   </style>
 </head>
