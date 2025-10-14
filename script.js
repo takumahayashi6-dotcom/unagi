@@ -91,6 +91,24 @@ const CATEGORY_TRANSLATION = {
   "デザート": "Dessert"
 };
 
+// 🔽これを追加！
+const CATEGORY_ORDER = [
+  "季節のお料理",
+  "うなぎ料理",
+  "コース料理",
+  "お料理",
+  "サラダ",
+  "ビール",
+  "日本酒",
+  "焼酎",
+  "ウイスキー",
+  "サワー類",
+  "ジャパニーズジン",
+  "ソフトドリンク",
+  "デザート"
+];
+
+
 
 function renderTabs(categories) {
   const tabsEl = document.getElementById("tabs");
