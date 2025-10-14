@@ -82,7 +82,31 @@
     .takeout-badge { background:#f5dada; color:#8b0000; padding:3px 8px; border-radius:6px; font-size:0.8em; display:inline-block; margin-bottom:6px; }
     .note { text-align:center; font-size:.9em; color:#555; margin:12px 0 24px; }
 
-    @media (max-width:720px) { .menu-item { flex-direction:column; } }
+    /* ===== スマホ用調整 ===== */
+@media (max-width: 720px) {
+  .menu-item {
+    flex-direction: column;
+    align-items: flex-start;   /* ← 左揃えに変更 */
+  }
+
+  .menu-text {
+    text-align: left;          /* ← テキスト左揃え */
+    width: 100%;               /* ← 画面幅いっぱい使う */
+    margin-top: 8px;           /* ← 画像との間に余白 */
+    padding: 0 8px;            /* ← 左右に少し余白 */
+  }
+
+  .menu-img {
+    margin: 0 auto;            /* ← 画像だけ中央に */
+  }
+
+  .menu-img img {
+    width: 100%;
+    height: auto;
+    border-radius: 10px;
+  }
+}
+
   </style>
 
   <!-- ライブラリ -->
