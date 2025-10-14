@@ -40,25 +40,25 @@ function cardHTML(row) {
 
   const title = currentLang === "jp" ? jp : en;
   const desc = currentLang === "jp" ? djp : den;
-  // --- 価格整形（複数対応＋自動￥付き）---
+// --- 価格整形（複数対応＋グラス/ボトル名残す）---
 let prText = "";
 if (pr) {
-  // 「/」で区切られている場合（例：グラス730/ボトル2000）
   if (pr.includes("/")) {
+    // 「/」区切り（例：グラス730/ボトル2970）
     const parts = pr.split("/");
     prText = parts.map(p => {
       const part = p.trim();
-      // 数字を含む部分にだけ￥をつける
-      return `<div class="price">${
-        part.match(/\d/) ? "￥" + part.replace(/[^\d.]/g, "").toLocaleString("ja-JP") : part
-      }</div>`;
+      // 数字の前にだけ「￥」をつける
+      const formatted = part.replace(/(\d[\d,]*)/g, "￥$1");
+      return `<div class="price">${formatted}</div>`;
     }).join("");
   } else {
-    // 単一価格の場合
-    const val = pr.trim();
-    prText = `<p class="price">￥${val.replace(/[^\d.]/g, "").toLocaleString("ja-JP")}</p>`;
+    // 単一価格
+    const formatted = pr.trim().replace(/(\d[\d,]*)/g, "￥$1");
+    prText = `<p class="price">${formatted}</p>`;
   }
 }
+
 
 
   return `
