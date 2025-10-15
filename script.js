@@ -1,4 +1,5 @@
-const SHEET_CSV_URL ="https://docs.google.com/spreadsheets/d/e/2PACX-1vR7Rdo_eCMQF-HTxCjdZJDx6z8OQnYjc0WTVwuc_N6TNYpdwfFy5DLRmW35gbLZklPcuSGxmmGfafeT/pub?output=csv";
+const SHEET_CSV_URL =
+  "https://docs.google.com/spreadsheets/d/e/2PACX-1vR7Rdo_eCMQF-HTxCjdZJDx6z8OQnYjc0WTVwuc_N6TNYpdwfFy5DLRmW35gbLZklPcuSGxmmGfafeT/pub?output=csv";
 
 let allRows = [];
 let currentCategory = "";
@@ -8,11 +9,13 @@ const params = new URLSearchParams(window.location.search);
 const langParam = params.get("lang");
 let currentLang = ["jp", "en", "zh"].includes(langParam) ? langParam : "jp";
 
+// 数値を日本語円表記に
 function yen(v) {
   const n = Number(v);
   return isNaN(n) ? v : n.toLocaleString("ja-JP");
 }
 
+// 列名の揺れを吸収
 const norm = (s) => String(s || "").trim().toLowerCase().replace(/\s+/g, " ");
 function get(row, wanted) {
   const key = Object.keys(row).find((k) => norm(k) === norm(wanted));
@@ -20,12 +23,10 @@ function get(row, wanted) {
 }
 
 function getCategory(row) {
-  const g = get(row, "Group");
-  if (g) return g;
-  return get(row, "Category");
+  return get(row, "Group") || get(row, "Category");
 }
 
-// --- ヘッダーを言語に応じて切り替え ---
+// --- ヘッダーを言語ごとに切り替え ---
 function renderHeader() {
   const header = document.getElementById("header");
 
@@ -44,7 +45,7 @@ function renderHeader() {
   }
 }
 
-// --- カード描画 ---
+// --- カード（メニュー1件）描画 ---
 function cardHTML(row) {
   const cat = getCategory(row);
   const sub = get(row, "Category");
@@ -52,6 +53,7 @@ function cardHTML(row) {
   const jp = get(row, "Name (JP)");
   const en = get(row, "Name (EN)");
   const zh = get(row, "Name (ZH)");
+
   const djp = get(row, "Description (JP)");
   const den = get(row, "Description (EN)");
   const dzh = get(row, "Description (ZH)");
@@ -60,34 +62,36 @@ function cardHTML(row) {
   const imgU = get(row, "Image URL");
   const take = get(row, "Takeout");
 
+  // 画像
   const img = imgU ? `<img src="${imgU}" alt="${en || jp || ""}">` : "";
+
+  // テイクアウトバッジ
   const takeBadge =
-    take && take.match(/(OK)/i)
+    take && /ok/i.test(take)
       ? `<span class="takeout-badge">${
-          currentLang === "jp"
-            ? "テイクアウト可"
-            : currentLang === "zh"
+          currentLang === "zh"
             ? "可外带"
-            : "Takeout OK"
+            : currentLang === "en"
+            ? "Takeout OK"
+            : "テイクアウト可"
         }</span>`
       : "";
 
-  // 言語切替（JP/EN/ZH）
+  // 言語ごとのタイトル・説明
   const title =
     currentLang === "zh" ? zh : currentLang === "en" ? en : jp;
   const desc =
     currentLang === "zh" ? dzh : currentLang === "en" ? den : djp;
 
-  // --- 価格整形（複数対応＋グラス/ボトル）---
+  // 価格処理（グラス／ボトル対応）
   let prText = "";
   if (pr) {
     if (pr.includes("/")) {
-      const parts = pr.split("/");
-      prText = parts
+      prText = pr
+        .split("/")
         .map((p) => {
-          const part = p.trim();
-          const formatted = part.replace(/(\d[\d,]*)/g, "￥$1");
-          return `<div class="price">${formatted}</div>`;
+          const part = p.trim().replace(/(\d[\d,]*)/g, "￥$1");
+          return `<div class="price">${part}</div>`;
         })
         .join("");
     } else {
@@ -96,9 +100,8 @@ function cardHTML(row) {
     }
   }
 
-  // カテゴリ名を言語に応じて翻訳
-  const catLabel =
-    CATEGORY_TRANSLATION[currentLang]?.[cat] || cat;
+  // カテゴリ翻訳
+  const catLabel = CATEGORY_TRANSLATION[currentLang]?.[cat] || cat;
 
   return `
     <div class="menu-item">
@@ -129,7 +132,7 @@ const CATEGORY_TRANSLATION = {
     "サワー類": "サワー類",
     "ジャパニーズジン": "ジャパニーズジン",
     "ソフトドリンク": "ソフトドリンク",
-    "デザート": "デザート"
+    "デザート": "デザート",
   },
   en: {
     "季節のお料理": "Seasonal Dishes",
@@ -144,7 +147,7 @@ const CATEGORY_TRANSLATION = {
     "サワー類": "Sours",
     "ジャパニーズジン": "Japanese Gin",
     "ソフトドリンク": "Soft Drinks",
-    "デザート": "Dessert"
+    "デザート": "Dessert",
   },
   zh: {
     "季節のお料理": "时令料理",
@@ -159,8 +162,8 @@ const CATEGORY_TRANSLATION = {
     "サワー類": "酸酒",
     "ジャパニーズジン": "日本琴酒",
     "ソフトドリンク": "软饮料",
-    "デザート": "甜点"
-  }
+    "デザート": "甜点",
+  },
 };
 
 // --- カテゴリ順序 ---
@@ -177,7 +180,7 @@ const CATEGORY_ORDER = [
   "サワー類",
   "ジャパニーズジン",
   "ソフトドリンク",
-  "デザート"
+  "デザート",
 ];
 
 // --- タブ描画 ---
@@ -204,11 +207,11 @@ function showCategory(cat) {
   const noteHTML = `
     <div class="note">
       ${
-        currentLang === "jp"
-          ? "※ 表示価格は税込みです。写真はイメージです。ご飯大盛りは160円です。"
-          : currentLang === "zh"
+        currentLang === "zh"
           ? "※ 价格含税，图片仅供参考。加大饭需加160日元。"
-          : "※ Prices include tax. Photos are for illustration only. Large rice +¥160."
+          : currentLang === "en"
+          ? "※ Prices include tax. Photos are for illustration only. Large rice +¥160."
+          : "※ 表示価格は税込みです。写真はイメージです。ご飯大盛りは160円です。"
       }
     </div>`;
 
@@ -235,7 +238,5 @@ Papa.parse(SHEET_CSV_URL, {
   error: (err) => {
     document.getElementById("menu").innerHTML =
       "<p>メニューの読み込みに失敗しました。</p>";
-  }
+  },
 });
-
-
