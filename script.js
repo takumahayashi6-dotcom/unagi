@@ -176,7 +176,7 @@ const CATEGORY_TRANSLATION = {
     "デザート": "Dessert",
     "その他": "Others",
   },
-  zh: {}, // ← 現在コメントアウト扱い（翻訳なし）
+  zh: {}, // 今は未使用
 };
 
 // --- カテゴリ順序 ---
@@ -251,7 +251,7 @@ Papa.parse(SHEET_CSV_URL, {
           <p>Please check the Japanese or English menu.</p>
         </div>
       `;
-      return; // ← CSV読み込みをスキップ
+      return; // ✅ ← これが関数内なのでエラーにならない！
     }
 
     renderHeader();
