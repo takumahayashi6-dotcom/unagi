@@ -5,7 +5,9 @@ let currentCategory = "";
 
 // URLから言語を取得
 const params = new URLSearchParams(window.location.search);
-let currentLang = params.get("lang") === "en" ? "en" : "jp"; // デフォルトjp
+const langParam = params.get("lang");
+let currentLang = ["jp", "en", "zh"].includes(langParam) ? langParam : "jp";
+
 
 function yen(v) {
   const n = Number(v);
@@ -32,12 +34,17 @@ function renderHeader() {
     header.innerHTML = `
       <h1>Ichinoya Menu<br><span class="en">Unagi Restaurant Menu</span></h1>
     `;
+  } else if (currentLang === "zh") {
+    header.innerHTML = `
+      <h1>一之屋 菜单<br><span class="en">鳗鱼料理专门店</span></h1>
+    `;
   } else {
     header.innerHTML = `
       <h1>いちのや料理メニュー<br><span class="en">うなぎ料理専門店</span></h1>
     `;
   }
 }
+
 
 // --- カード描画 ---
 function cardHTML(row) {
@@ -100,21 +107,55 @@ function cardHTML(row) {
 }
 
 // --- カテゴリ名翻訳 ---
+// カテゴリ翻訳辞書
 const CATEGORY_TRANSLATION = {
-  "季節のお料理": "Seasonal Dishes",
-  "うなぎ料理": "Unagi Dishes",
-  "コース料理": "Course Meals",
-  "お料理": "Dishes",
-  "サラダ": "Salads",
-  "ビール": "Beer",
-  "日本酒": "Sake",
-  "焼酎": "Shochu",
-  "ウイスキー": "Whisky",
-  "サワー類": "Sours",
-  "ジャパニーズジン": "Japanese Gin",
-  "ソフトドリンク": "Soft Drinks",
-  "デザート": "Dessert",
+  jp: {
+    "季節のお料理": "季節のお料理",
+    "うなぎ料理": "うなぎ料理",
+    "コース料理": "コース料理",
+    "お料理": "お料理",
+    "サラダ": "サラダ",
+    "ビール": "ビール",
+    "日本酒": "日本酒",
+    "焼酎": "焼酎",
+    "ウイスキー": "ウイスキー",
+    "サワー類": "サワー類",
+    "ジャパニーズジン": "ジャパニーズジン",
+    "ソフトドリンク": "ソフトドリンク",
+    "デザート": "デザート"
+  },
+  en: {
+    "季節のお料理": "Seasonal Dishes",
+    "うなぎ料理": "Unagi Dishes",
+    "コース料理": "Course Meals",
+    "お料理": "Dishes",
+    "サラダ": "Salads",
+    "ビール": "Beer",
+    "日本酒": "Sake",
+    "焼酎": "Shochu",
+    "ウイスキー": "Whisky",
+    "サワー類": "Sours",
+    "ジャパニーズジン": "Japanese Gin",
+    "ソフトドリンク": "Soft Drinks",
+    "デザート": "Dessert"
+  },
+  zh: {
+    "季節のお料理": "时令料理",
+    "うなぎ料理": "鳗鱼料理",
+    "コース料理": "套餐",
+    "お料理": "料理",
+    "サラダ": "沙拉",
+    "ビール": "啤酒",
+    "日本酒": "清酒",
+    "焼酎": "烧酒",
+    "ウイスキー": "威士忌",
+    "サワー類": "酸酒",
+    "ジャパニーズジン": "日本琴酒",
+    "ソフトドリンク": "软饮料",
+    "デザート": "甜点"
+  }
 };
+
 
 // --- カテゴリ順序 ---
 const CATEGORY_ORDER = [
@@ -135,9 +176,21 @@ const CATEGORY_ORDER = [
 
 function renderTabs(categories) {
   const tabsEl = document.getElementById("tabs");
-  const ordered = CATEGORY_ORDER.filter(c => categories.includes(c)).concat(
-    categories.filter(c => !CATEGORY_ORDER.includes(c))
+  const ordered = CATEGORY_ORDER.filter((c) => categories.includes(c)).concat(
+    categories.filter((c) => !CATEGORY_ORDER.includes(c))
   );
+
+  tabsEl.innerHTML = ordered
+    .map((cat) => {
+      const label =
+        CATEGORY_TRANSLATION[currentLang]?.[cat] || cat;
+      return `<div class="tab ${
+        cat === currentCategory ? "active" : ""
+      }" onclick="showCategory('${cat}')">${label}</div>`;
+    })
+    .join("");
+}
+
 
   tabsEl.innerHTML = ordered
     .map(cat => {
