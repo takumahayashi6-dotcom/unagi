@@ -129,10 +129,12 @@ function cardHTML(row) {
       <div class="menu-img">${img}</div>
       <div class="menu-text">
         ${cat ? `<div class="cat">${catLabel}${sub && sub !== cat ? " - " + sub : ""}</div>` : ""}
-        <h2>${title}</h2>
-        ${takeBadge}
-        <p>${desc}</p>
-        ${prText}
+       <h2>${title}</h2>
+${currentLang !== "jp" && jp ? `<div class="jp-sub">${jp}</div>` : ""}
+${takeBadge}
+<p>${desc}</p>
+${prText}
+
       </div>
     </div>
   `;
