@@ -83,16 +83,48 @@ function cardHTML(row) {
   const desc =
     currentLang === "zh" ? dzh : currentLang === "en" ? den : djp;
 
-  // 価格処理（グラス／ボトル対応）
-   // --- 価格整形（複数対応＋グラス/ボトル翻訳付き）---
-  let prText = "";
-  if (pr) {
-    // 言語ごとの単語変換表
-    const PRICE_TERM_MAP = {
-      jp: { "グラス": "グラス", "ボトル": "ボトル" },
-      en: { "グラス": "Glass", "ボトル": "Bottle" },
-      zh: { "グラス": "杯", "ボトル": "瓶" },
-    };
+ // --- 価格整形（複数対応＋グラス/ボトル/ポット）---
+let prText = "";
+if (pr) {
+  if (pr.includes("/")) {
+    const parts = pr.split("/");
+    prText = parts
+      .map((p) => {
+        let part = p.trim();
+        // ✅ 英語変換（Glass / Bottle / Pot）
+        if (currentLang === "en") {
+          part = part
+            .replace("グラス", "Glass")
+            .replace("ボトル", "Bottle")
+            .replace("ポット", "Pot");
+        } else if (currentLang === "zh") {
+          part = part
+            .replace("グラス", "杯")
+            .replace("ボトル", "瓶")
+            .replace("ポット", "壶");
+        }
+        const formatted = part.replace(/(\d[\d,]*)/g, "￥$1");
+        return `<div class="price">${formatted}</div>`;
+      })
+      .join("");
+  } else {
+    let part = pr.trim();
+    if (currentLang === "en") {
+      part = part
+        .replace("グラス", "Glass")
+        .replace("ボトル", "Bottle")
+        .replace("ポット", "Pot");
+    } else if (currentLang === "zh") {
+      part = part
+        .replace("グラス", "杯")
+        .replace("ボトル", "瓶")
+        .replace("ポット", "壶");
+    }
+    const formatted = part.replace(/(\d[\d,]*)/g, "￥$1");
+    prText = `<p class="price">${formatted}</p>`;
+  }
+}
+
 
     // 単語変換関数
     function translatePriceTerm(text) {
