@@ -283,6 +283,18 @@ Papa.parse(SHEET_CSV_URL, {
   header: true,
   skipEmptyLines: true,
   complete: (res) => {
+    if (currentLang === "zh") {
+    document.getElementById("header").innerHTML = `
+      <h1>一之屋 菜单<br><span class="en">鳗鱼料理专门店</span></h1>
+    `;
+    document.getElementById("menu").innerHTML = `
+      <div class="note" style="text-align:center; padding:40px; font-size:1.1em;">
+        <p>中文菜单正在制作中。</p>
+        <p>Please check the Japanese or English menu.</p>
+      </div>
+    `;
+    return; // ← ここで処理終了
+  }
     renderHeader();
 
     allRows = res.data.filter((r) => {
