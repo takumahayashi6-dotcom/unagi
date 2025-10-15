@@ -83,90 +83,60 @@ function cardHTML(row) {
   const desc =
     currentLang === "zh" ? dzh : currentLang === "en" ? den : djp;
 
- // --- 価格整形（複数対応＋グラス/ボトル/ポット）---
-let prText = "";
-if (pr) {
-  if (pr.includes("/")) {
-    const parts = pr.split("/");
-    prText = parts
-      .map((p) => {
-        let part = p.trim();
-        // ✅ 英語変換（Glass / Bottle / Pot）
-        if (currentLang === "en") {
-          part = part
-            .replace("グラス", "Glass")
-            .replace("ボトル", "Bottle")
-            .replace("ポット", "Pot");
-        } else if (currentLang === "zh") {
-          part = part
-            .replace("グラス", "杯")
-            .replace("ボトル", "瓶")
-            .replace("ポット", "壶");
-        }
-        const formatted = part.replace(/(\d[\d,]*)/g, "￥$1");
-        return `<div class="price">${formatted}</div>`;
-      })
-      .join("");
-  } else {
-    let part = pr.trim();
-    if (currentLang === "en") {
-      part = part
-        .replace("グラス", "Glass")
-        .replace("ボトル", "Bottle")
-        .replace("ポット", "Pot");
-    } else if (currentLang === "zh") {
-      part = part
-        .replace("グラス", "杯")
-        .replace("ボトル", "瓶")
-        .replace("ポット", "壶");
-    }
-    const formatted = part.replace(/(\d[\d,]*)/g, "￥$1");
-    prText = `<p class="price">${formatted}</p>`;
-  }
-}
-
-
-    // 単語変換関数
-    function translatePriceTerm(text) {
-      const map = PRICE_TERM_MAP[currentLang];
-      return text
-        .replace(/グラス/g, map["グラス"])
-        .replace(/ボトル/g, map["ボトル"]);
-    }
+  // --- 価格整形（グラス/ボトル/ポット対応）---
+  let prText = "";
+  if (pr) {
+    const translatePriceTerm = (text) => {
+      if (currentLang === "en") {
+        return text
+          .replace(/グラス/g, "Glass")
+          .replace(/ボトル/g, "Bottle")
+          .replace(/ポット/g, "Pot");
+      } else if (currentLang === "zh") {
+        return text
+          .replace(/グラス/g, "杯")
+          .replace(/ボトル/g, "瓶")
+          .replace(/ポット/g, "壶");
+      }
+      return text;
+    };
 
     if (pr.includes("/")) {
-      // 例：グラス730/ボトル2970
       const parts = pr.split("/");
       prText = parts
         .map((p) => {
-          let part = p.trim();
-          part = translatePriceTerm(part);
-          part = part.replace(/(\d[\d,]*)/g, "￥$1");
-          return `<div class="price">${part}</div>`;
+          let part = translatePriceTerm(p.trim());
+          const formatted = part.replace(/(\d[\d,]*)/g, "￥$1");
+          return `<div class="price">${formatted}</div>`;
         })
         .join("");
     } else {
-      let formatted = translatePriceTerm(pr.trim());
-      formatted = formatted.replace(/(\d[\d,]*)/g, "￥$1");
+      let part = translatePriceTerm(pr.trim());
+      const formatted = part.replace(/(\d[\d,]*)/g, "￥$1");
       prText = `<p class="price">${formatted}</p>`;
     }
   }
 
-
   // カテゴリ翻訳
   const catLabel = CATEGORY_TRANSLATION[currentLang]?.[cat] || cat;
 
+  // 出力HTML
   return `
     <div class="menu-item">
       <div class="menu-img">${img}</div>
       <div class="menu-text">
-        ${cat ? `<div class="cat">${catLabel}${sub && sub !== cat ? " - " + sub : ""}</div>` : ""}
-       <h2>${title}</h2>
-${currentLang !== "jp" && jp ? `<div class="jp-sub">${jp}</div>` : ""}
-${takeBadge}
-<p>${desc}</p>
-${prText}
-
+        ${
+          cat
+            ? `<div class="cat">${catLabel}${
+                sub && sub !== cat ? " - " + sub : ""
+              }</div>`
+            : ""
+        }
+        <h2>${title}</h2>
+        ${currentLang !== "jp" && jp ? `<div class="jp-sub">${jp}</div>` : ""}
+        ${takeBadge}
+        <p>${desc}</p>
+        ${prText}
       </div>
     </div>
   `;
@@ -206,22 +176,7 @@ const CATEGORY_TRANSLATION = {
     "デザート": "Dessert",
     "その他": "Others",
   },
-  zh: {
-    "季節のお料理": "时令料理",
-    "うなぎ料理": "鳗鱼料理",
-    "コース料理": "套餐",
-    "お料理": "料理",
-    "サラダ": "沙拉",
-    "ビール": "啤酒",
-    "日本酒": "清酒",
-    "焼酎": "烧酒",
-    "ウイスキー": "威士忌",
-    "サワー類": "酸酒",
-    "ジャパニーズジン": "日本琴酒",
-    "ソフトドリンク": "软饮料",
-    "デザート": "甜点",
-    "その他": "其他",
-  },
+  zh: {}, // ← 現在コメントアウト扱い（翻訳なし）
 };
 
 // --- カテゴリ順序 ---
@@ -251,7 +206,9 @@ function renderTabs(categories) {
   tabsEl.innerHTML = ordered
     .map((cat) => {
       const label = CATEGORY_TRANSLATION[currentLang]?.[cat] || cat;
-      return `<div class="tab ${cat === currentCategory ? "active" : ""}" onclick="showCategory('${cat}')">${label}</div>`;
+      return `<div class="tab ${
+        cat === currentCategory ? "active" : ""
+      }" onclick="showCategory('${cat}')">${label}</div>`;
     })
     .join("");
 }
@@ -283,18 +240,20 @@ Papa.parse(SHEET_CSV_URL, {
   header: true,
   skipEmptyLines: true,
   complete: (res) => {
+    // ✅ 中国語メニューは「準備中」メッセージを表示して終了
     if (currentLang === "zh") {
-    document.getElementById("header").innerHTML = `
-      <h1>一之屋 菜单<br><span class="en">鳗鱼料理专门店</span></h1>
-    `;
-    document.getElementById("menu").innerHTML = `
-      <div class="note" style="text-align:center; padding:40px; font-size:1.1em;">
-        <p>中文菜单正在制作中。</p>
-        <p>Please check the Japanese or English menu.</p>
-      </div>
-    `;
-    return; // ← ここで処理終了
-  }
+      document.getElementById("header").innerHTML = `
+        <h1>一之屋 菜单<br><span class="en">鳗鱼料理专门店</span></h1>
+      `;
+      document.getElementById("menu").innerHTML = `
+        <div class="note" style="text-align:center; padding:40px; font-size:1.1em;">
+          <p>中文菜单正在制作中。</p>
+          <p>Please check the Japanese or English menu.</p>
+        </div>
+      `;
+      return; // ← CSV読み込みをスキップ
+    }
+
     renderHeader();
 
     allRows = res.data.filter((r) => {
