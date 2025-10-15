@@ -156,6 +156,7 @@ const CATEGORY_TRANSLATION = {
     "ジャパニーズジン": "ジャパニーズジン",
     "ソフトドリンク": "ソフトドリンク",
     "デザート": "デザート",
+    "その他": "その他",
   },
   en: {
     "季節のお料理": "Seasonal Dishes",
@@ -171,6 +172,7 @@ const CATEGORY_TRANSLATION = {
     "ジャパニーズジン": "Japanese Gin",
     "ソフトドリンク": "Soft Drinks",
     "デザート": "Dessert",
+    "その他": "Others",
   },
   zh: {
     "季節のお料理": "时令料理",
@@ -186,6 +188,7 @@ const CATEGORY_TRANSLATION = {
     "ジャパニーズジン": "日本琴酒",
     "ソフトドリンク": "软饮料",
     "デザート": "甜点",
+    "その他": "其他",
   },
 };
 
