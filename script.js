@@ -81,7 +81,23 @@ if (pr) {
     <div class="menu-item">
       <div class="menu-img">${img}</div>
       <div class="menu-text">
-        ${cat ? `<div class="cat">${cat}${sub && sub!==cat ? " - " + sub : ""}</div>` : ""}
+    // カテゴリ名を言語に応じて切り替え
+const catLabel = currentLang === "en" && CATEGORY_TRANSLATION[cat]
+  ? CATEGORY_TRANSLATION[cat]
+  : cat;
+
+return `
+  <div class="menu-item">
+    <div class="menu-img">${img}</div>
+    <div class="menu-text">
+      ${cat ? `<div class="cat">${catLabel}${sub && sub!==cat ? " - " + sub : ""}</div>` : ""}
+      <h2>${title}</h2>
+      ${takeBadge}
+      <p>${desc}</p>
+      ${prText}
+    </div>
+  </div>`;
+
         <h2>${title}</h2>
         ${takeBadge}
         <p>${desc}</p>
