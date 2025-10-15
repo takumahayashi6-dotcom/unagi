@@ -21,6 +21,22 @@ function getCategory(row) {
   return get(row, "Category");
 }
 
+// --- ヘッダーを言語に応じて切り替え ---
+function renderHeader() {
+  const header = document.getElementById("header");
+
+  if (currentLang === "en") {
+    header.innerHTML = `
+      <h1>Ichinoya Menu<br><span class="en">Unagi Restaurant Menu</span></h1>
+    `;
+  } else {
+    header.innerHTML = `
+      <h1>いちのや料理メニュー<br><span class="en">うなぎ料理専門店</span></h1>
+    `;
+  }
+}
+
+
 // --- カード描画 ---
 function cardHTML(row) {
   const cat  = getCategory(row);
@@ -147,6 +163,9 @@ Papa.parse(SHEET_CSV_URL, {
   header: true,
   skipEmptyLines: true,
   complete: (res) => {
+
+     renderHeader();
+    
     allRows = res.data.filter(r => {
       const vis = get(r, "Visible").trim().toLowerCase();
       return !(vis && vis.match(/^(×|✗|x|no|0|false)$/i));
