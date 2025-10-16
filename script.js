@@ -4,18 +4,18 @@ const SHEET_CSV_URL =
 let allRows = [];
 let currentCategory = "";
 
-// URLから言語を取得（日本語 / 英語 / 中国語）
+// === 言語取得（日本語 / 英語 / 中国語） ===
 const params = new URLSearchParams(window.location.search);
 const langParam = params.get("lang");
 let currentLang = ["jp", "en", "zh"].includes(langParam) ? langParam : "jp";
 
-// 数値を日本語円表記に
+// === 数値を日本円表記に ===
 function yen(v) {
   const n = Number(v);
   return isNaN(n) ? v : n.toLocaleString("ja-JP");
 }
 
-// 列名の揺れを吸収
+// === 列名揺れ対策 ===
 const norm = (s) => String(s || "").trim().toLowerCase().replace(/\s+/g, " ");
 function get(row, wanted) {
   const key = Object.keys(row).find((k) => norm(k) === norm(wanted));
@@ -26,7 +26,7 @@ function getCategory(row) {
   return get(row, "Group") || get(row, "Category");
 }
 
-// --- ヘッダーを言語ごとに切り替え ---
+// === ヘッダー切り替え ===
 function renderHeader() {
   const header = document.getElementById("header");
 
@@ -45,7 +45,7 @@ function renderHeader() {
   }
 }
 
-// --- カード（メニュー1件）描画 ---
+// === メニューカード描画 ===
 function cardHTML(row) {
   const cat = getCategory(row);
   const sub = get(row, "Category");
@@ -62,10 +62,10 @@ function cardHTML(row) {
   const imgU = get(row, "Image URL");
   const take = get(row, "Takeout");
 
-  // 画像
+  // === 画像 ===
   const img = imgU ? `<img src="${imgU}" alt="${en || jp || ""}">` : "";
 
-  // テイクアウトバッジ
+  // === テイクアウトバッジ ===
   const takeBadge =
     take && /ok/i.test(take)
       ? `<span class="takeout-badge">${
@@ -77,57 +77,59 @@ function cardHTML(row) {
         }</span>`
       : "";
 
-  // 言語ごとのタイトル・説明
+  // === タイトル・説明 ===
   const title =
     currentLang === "zh" ? zh : currentLang === "en" ? en : jp;
   const desc =
     currentLang === "zh" ? dzh : currentLang === "en" ? den : djp;
-  // --- 備考欄（日本語メニューのみ表示） ---
-let noteHTML = "";
-if (currentLang === "jp") {
-  const njp = get(row, "Note (JP)");
-  if (njp) {
-    noteHTML = `<p class="note-sub">${njp}</p>`;
-  }
-}
-// --- 価格整形（グラス/ボトル/ポット/容量対応）---
-let prText = "";
-if (pr) {
-  const translatePriceTerm = (text) => {
-    if (currentLang === "en") {
-      return text
-        .replace(/グラス/g, "Glass")
-        .replace(/ボトル/g, "Bottle")
-        .replace(/ポット/g, "Pot");
-    } else if (currentLang === "zh") {
-      return text
-        .replace(/グラス/g, "杯")
-        .replace(/ボトル/g, "瓶")
-        .replace(/ポット/g, "壶");
+
+  // === 備考欄（日本語のみ） ===
+  let noteHTML = "";
+  if (currentLang === "jp") {
+    const njp = get(row, "Note (JP)");
+    if (njp) {
+      noteHTML = `<p class="note-sub">${njp}</p>`;
     }
-    return text;
-  };
-
-  if (pr.includes("/")) {
-    const parts = pr.split("/");
-    prText = parts
-      .map((p) => {
-        let part = translatePriceTerm(p.trim());
-        const formatted = part.replace(/(\d[\d,]*)/g, "￥$1");
-        return `<div class="price">${formatted}</div>`;
-      })
-      .join("");
-  } else {
-    let part = translatePriceTerm(pr.trim());
-    const formatted = part.replace(/(\d[\d,]*)/g, "￥$1");
-    prText = `<p class="price">${formatted}</p>`;
   }
-}
 
-  // カテゴリ翻訳
+  // === 価格整形（グラス / ボトル / ポット / 容量対応） ===
+  let prText = "";
+  if (pr) {
+    const translatePriceTerm = (text) => {
+      if (currentLang === "en") {
+        return text
+          .replace(/グラス/g, "Glass")
+          .replace(/ボトル/g, "Bottle")
+          .replace(/ポット/g, "Pot");
+      } else if (currentLang === "zh") {
+        return text
+          .replace(/グラス/g, "杯")
+          .replace(/ボトル/g, "瓶")
+          .replace(/ポット/g, "壶");
+      }
+      return text;
+    };
+
+    if (pr.includes("/")) {
+      const parts = pr.split("/");
+      prText = parts
+        .map((p) => {
+          let part = translatePriceTerm(p.trim());
+          const formatted = part.replace(/(\d[\d,]*)/g, "￥$1");
+          return `<div class="price">${formatted}</div>`;
+        })
+        .join("");
+    } else {
+      let part = translatePriceTerm(pr.trim());
+      const formatted = part.replace(/(\d[\d,]*)/g, "￥$1");
+      prText = `<p class="price">${formatted}</p>`;
+    }
+  }
+
+  // === カテゴリ翻訳 ===
   const catLabel = CATEGORY_TRANSLATION[currentLang]?.[cat] || cat;
 
-  // 出力HTML
+  // === HTML出力 ===
   return `
     <div class="menu-item">
       <div class="menu-img">${img}</div>
@@ -150,7 +152,7 @@ if (pr) {
   `;
 }
 
-// --- カテゴリ翻訳辞書 ---
+// === カテゴリ翻訳辞書 ===
 const CATEGORY_TRANSLATION = {
   jp: {
     "季節のお料理": "季節のお料理",
@@ -184,10 +186,10 @@ const CATEGORY_TRANSLATION = {
     "デザート": "Dessert",
     "その他": "Others",
   },
-  zh: {}, // 今は未使用
+  zh: {}, // ← 今は未使用
 };
 
-// --- カテゴリ順序 ---
+// === カテゴリ順序 ===
 const CATEGORY_ORDER = [
   "季節のお料理",
   "うなぎ料理",
@@ -204,7 +206,7 @@ const CATEGORY_ORDER = [
   "デザート",
 ];
 
-// --- タブ描画 ---
+// === タブ描画 ===
 function renderTabs(categories) {
   const tabsEl = document.getElementById("tabs");
   const ordered = CATEGORY_ORDER.filter((c) => categories.includes(c)).concat(
@@ -221,7 +223,7 @@ function renderTabs(categories) {
     .join("");
 }
 
-// --- カテゴリ表示 ---
+// === カテゴリ表示 ===
 function showCategory(cat) {
   currentCategory = cat;
   renderTabs([...new Set(allRows.map((r) => getCategory(r)))]);
@@ -242,7 +244,7 @@ function showCategory(cat) {
     noteHTML + filtered.map(cardHTML).join("");
 }
 
-// --- CSV読み込み ---
+// === CSV読み込み ===
 Papa.parse(SHEET_CSV_URL, {
   download: true,
   header: true,
@@ -259,9 +261,10 @@ Papa.parse(SHEET_CSV_URL, {
           <p>Please check the Japanese or English menu.</p>
         </div>
       `;
-      return; // ✅ ← これが関数内なのでエラーにならない！
+      return;
     }
 
+    // ✅ 通常メニュー処理
     renderHeader();
 
     allRows = res.data.filter((r) => {
@@ -272,7 +275,7 @@ Papa.parse(SHEET_CSV_URL, {
     const categories = [...new Set(allRows.map((r) => getCategory(r)))];
     if (categories.length > 0) showCategory(categories[0]);
   },
-  error: (err) => {
+  error: () => {
     document.getElementById("menu").innerHTML =
       "<p>メニューの読み込みに失敗しました。</p>";
   },
