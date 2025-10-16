@@ -121,7 +121,7 @@ function cardHTML(row) {
         .join("");
     } else {
       let part = translatePriceTerm(pr.trim());
-      const formatted = part.replace(/(\d[\d,]*)/g, "￥$1");
+      const formatted = part.replace(/(\d[\d,]*)(?!\s*ml)/g, "￥$1");
       prText = `<p class="price">${formatted}</p>`;
     }
   }
