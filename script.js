@@ -82,6 +82,15 @@ function cardHTML(row) {
     currentLang === "zh" ? zh : currentLang === "en" ? en : jp;
   const desc =
     currentLang === "zh" ? dzh : currentLang === "en" ? den : djp;
+  // --- 備考欄（日本語メニューのみ表示） ---
+let noteHTML = "";
+if (currentLang === "jp") {
+  const njp = get(row, "Note (JP)");
+  if (njp) {
+    noteHTML = `<p class="note-sub">${njp}</p>`;
+  }
+}
+
 
  // --- 価格整形（グラス/ボトル/ポット/容量対応）---
 let prText = "";
@@ -148,6 +157,7 @@ if (pr) {
         ${currentLang !== "jp" && jp ? `<div class="jp-sub">${jp}</div>` : ""}
         ${takeBadge}
         <p>${desc}</p>
+        ${noteHTML}
         ${prText}
       </div>
     </div>
