@@ -90,9 +90,7 @@ if (currentLang === "jp") {
     noteHTML = `<p class="note-sub">${njp}</p>`;
   }
 }
-
-
- // --- 価格整形（グラス/ボトル/ポット/容量対応）---
+// --- 価格整形（グラス/ボトル/ポット/容量対応）---
 let prText = "";
 if (pr) {
   const translatePriceTerm = (text) => {
@@ -110,33 +108,21 @@ if (pr) {
     return text;
   };
 
-  // ✅ 改良：スラッシュで分けて行ごとに表示
-  const parts = pr.split("/");
-  prText = parts
-    .map((p) => {
-      let part = translatePriceTerm(p.trim());
-      // ✅ 価格の前に "￥" をつける
-      const formatted = part.replace(/(\d[\d,]*)/g, "￥$1");
-      return `<div class="price">${formatted}</div>`;
-    })
-    .join("");
-}
-
-    if (pr.includes("/")) {
-      const parts = pr.split("/");
-      prText = parts
-        .map((p) => {
-          let part = translatePriceTerm(p.trim());
-          const formatted = part.replace(/(\d[\d,]*)/g, "￥$1");
-          return `<div class="price">${formatted}</div>`;
-        })
-        .join("");
-    } else {
-      let part = translatePriceTerm(pr.trim());
-      const formatted = part.replace(/(\d[\d,]*)/g, "￥$1");
-      prText = `<p class="price">${formatted}</p>`;
-    }
+  if (pr.includes("/")) {
+    const parts = pr.split("/");
+    prText = parts
+      .map((p) => {
+        let part = translatePriceTerm(p.trim());
+        const formatted = part.replace(/(\d[\d,]*)/g, "￥$1");
+        return `<div class="price">${formatted}</div>`;
+      })
+      .join("");
+  } else {
+    let part = translatePriceTerm(pr.trim());
+    const formatted = part.replace(/(\d[\d,]*)/g, "￥$1");
+    prText = `<p class="price">${formatted}</p>`;
   }
+}
 
   // カテゴリ翻訳
   const catLabel = CATEGORY_TRANSLATION[currentLang]?.[cat] || cat;
