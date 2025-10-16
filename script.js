@@ -83,23 +83,35 @@ function cardHTML(row) {
   const desc =
     currentLang === "zh" ? dzh : currentLang === "en" ? den : djp;
 
-  // --- 価格整形（グラス/ボトル/ポット対応）---
-  let prText = "";
-  if (pr) {
-    const translatePriceTerm = (text) => {
-      if (currentLang === "en") {
-        return text
-          .replace(/グラス/g, "Glass")
-          .replace(/ボトル/g, "Bottle")
-          .replace(/ポット/g, "Pot");
-      } else if (currentLang === "zh") {
-        return text
-          .replace(/グラス/g, "杯")
-          .replace(/ボトル/g, "瓶")
-          .replace(/ポット/g, "壶");
-      }
-      return text;
-    };
+ // --- 価格整形（グラス/ボトル/ポット/容量対応）---
+let prText = "";
+if (pr) {
+  const translatePriceTerm = (text) => {
+    if (currentLang === "en") {
+      return text
+        .replace(/グラス/g, "Glass")
+        .replace(/ボトル/g, "Bottle")
+        .replace(/ポット/g, "Pot");
+    } else if (currentLang === "zh") {
+      return text
+        .replace(/グラス/g, "杯")
+        .replace(/ボトル/g, "瓶")
+        .replace(/ポット/g, "壶");
+    }
+    return text;
+  };
+
+  // ✅ 改良：スラッシュで分けて行ごとに表示
+  const parts = pr.split("/");
+  prText = parts
+    .map((p) => {
+      let part = translatePriceTerm(p.trim());
+      // ✅ 価格の前に "￥" をつける
+      const formatted = part.replace(/(\d[\d,]*)/g, "￥$1");
+      return `<div class="price">${formatted}</div>`;
+    })
+    .join("");
+}
 
     if (pr.includes("/")) {
       const parts = pr.split("/");
